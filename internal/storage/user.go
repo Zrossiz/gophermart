@@ -6,7 +6,7 @@ import (
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"google.golang.org/genproto/googleapis/type/decimal"
+	"github.com/shopspring/decimal"
 )
 
 type UserStore struct {
