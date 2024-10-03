@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS order (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS change_balance_history (
+CREATE TABLE IF NOT EXISTS balance_history (
     id SERIAL PRIMARY KEY,
     order_id INT REFERENCES order(id) ON DELETE CASCADE,
     user_id INT REFERENCES user(id) ON DELETE CASCADE,
