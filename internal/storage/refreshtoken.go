@@ -54,7 +54,7 @@ func (t *TokenStore) DeleteTokensByUser(userID int64) (bool, error) {
 }
 
 func (t *TokenStore) GetTokenByToken(token string) (*model.RefreshToken, error) {
-	sql := `SELECT * FROM refresh_token WHERE token = $1`
+	sql := `SELECT id, user_id, token, created_at, updated_at FROM refresh_token WHERE token = $1`
 	row := t.db.QueryRow(context.Background(), sql, token)
 	var rt model.RefreshToken
 	err := row.Scan(&rt.ID, &rt.UserID, &rt.Token, &rt.CreatedAt, &rt.UpdatedAt)
@@ -69,7 +69,7 @@ func (t *TokenStore) GetTokenByToken(token string) (*model.RefreshToken, error) 
 }
 
 func (t *TokenStore) GetTokenByUser(userID int64) (*model.RefreshToken, error) {
-	sql := `SELECT * FROM refresh_token WHERE user_id = $1`
+	sql := `SELECT id, user_id, token, created_at, updated_at FROM refresh_token WHERE user_id = $1`
 	row := t.db.QueryRow(context.Background(), sql, userID)
 	var rt model.RefreshToken
 	err := row.Scan(&rt.ID, &rt.UserID, &rt.Token, &rt.CreatedAt, &rt.UpdatedAt)
