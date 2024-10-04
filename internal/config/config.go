@@ -14,6 +14,8 @@ type Config struct {
 	RefreshTokenSecret    string
 }
 
+var AppConfig *Config
+
 func getEnvOrDefault(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -52,6 +54,8 @@ func Init() (*Config, error) {
 	if cfg.RunAddress == "" {
 		return nil, errors.New("run address not provided")
 	}
+
+	AppConfig = cfg
 
 	return cfg, nil
 }
