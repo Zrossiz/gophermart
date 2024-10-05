@@ -1,4 +1,4 @@
-package storage
+package postgresql
 
 import (
 	"context"
@@ -12,8 +12,8 @@ type BalanceHistoryStore struct {
 	db *pgxpool.Pool
 }
 
-func NewBalanceHistoryStore(db *pgxpool.Pool) *BalanceHistoryStore {
-	return &BalanceHistoryStore{db: db}
+func NewBalanceHistoryStore(db *pgxpool.Pool) BalanceHistoryStore {
+	return BalanceHistoryStore{db: db}
 }
 
 func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory) (bool, error) {

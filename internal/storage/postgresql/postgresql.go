@@ -1,4 +1,4 @@
-package storage
+package postgresql
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 )
 
 type DBStorage struct {
-	BalanceHistoryStore *BalanceHistoryStore
-	UserStore           *UserStore
-	OrderStore          *OrderStore
-	TokenStore          *TokenStore
-	StatusStore         *StatusStore
+	BalanceHistoryStore BalanceHistoryStore
+	UserStore           UserStore
+	OrderStore          OrderStore
+	TokenStore          TokenStore
+	StatusStore         StatusStore
 }
 
 func Connect(dsn string) (*pgxpool.Pool, error) {
@@ -24,9 +24,9 @@ func Connect(dsn string) (*pgxpool.Pool, error) {
 	return db, nil
 }
 
-func New(dbConn *pgxpool.Pool) *DBStorage {
+func New(dbConn *pgxpool.Pool) DBStorage {
 
-	return &DBStorage{
+	return DBStorage{
 		BalanceHistoryStore: NewBalanceHistoryStore(dbConn),
 		UserStore:           NewUserStore(dbConn),
 		OrderStore:          NewOrderStore(dbConn),

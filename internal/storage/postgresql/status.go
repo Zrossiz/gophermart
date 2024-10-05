@@ -1,4 +1,4 @@
-package storage
+package postgresql
 
 import (
 	"context"
@@ -11,8 +11,8 @@ type StatusStore struct {
 	db *pgxpool.Pool
 }
 
-func NewStatusStore(db *pgxpool.Pool) *StatusStore {
-	return &StatusStore{db: db}
+func NewStatusStore(db *pgxpool.Pool) StatusStore {
+	return StatusStore{db: db}
 }
 
 func (s *StatusStore) Create(status string) (bool, error) {

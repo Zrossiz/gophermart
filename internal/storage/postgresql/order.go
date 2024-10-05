@@ -1,4 +1,4 @@
-package storage
+package postgresql
 
 import (
 	"context"
@@ -11,8 +11,8 @@ type OrderStore struct {
 	db *pgxpool.Pool
 }
 
-func NewOrderStore(db *pgxpool.Pool) *OrderStore {
-	return &OrderStore{db: db}
+func NewOrderStore(db *pgxpool.Pool) OrderStore {
+	return OrderStore{db: db}
 }
 
 func (o *OrderStore) CreateOrder(order *model.Order) (bool, error) {

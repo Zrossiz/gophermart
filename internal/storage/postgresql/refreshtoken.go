@@ -1,4 +1,4 @@
-package storage
+package postgresql
 
 import (
 	"context"
@@ -12,8 +12,8 @@ type TokenStore struct {
 	db *pgxpool.Pool
 }
 
-func NewTokenStore(db *pgxpool.Pool) *TokenStore {
-	return &TokenStore{db: db}
+func NewTokenStore(db *pgxpool.Pool) TokenStore {
+	return TokenStore{db: db}
 }
 
 func (t *TokenStore) Create(userID int64, token string) (bool, error) {

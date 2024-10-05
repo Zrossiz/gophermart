@@ -1,4 +1,4 @@
-package storage
+package postgresql
 
 import (
 	"context"
@@ -13,8 +13,8 @@ type UserStore struct {
 	db *pgxpool.Pool
 }
 
-func NewUserStore(db *pgxpool.Pool) *UserStore {
-	return &UserStore{db: db}
+func NewUserStore(db *pgxpool.Pool) UserStore {
+	return UserStore{db: db}
 }
 
 func (u *UserStore) Create(name string, password string) (bool, error) {
