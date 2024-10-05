@@ -12,6 +12,7 @@ type Config struct {
 	AcccrualSystemAddress string
 	AccessTokenSecret     string
 	RefreshTokenSecret    string
+	LogLevel              string
 }
 
 var AppConfig *Config
@@ -31,6 +32,7 @@ func Init() (*Config, error) {
 	flag.StringVar(&cfg.AcccrualSystemAddress, "r", "", "accrual system address")
 	flag.StringVar(&cfg.AccessTokenSecret, "as", "", "access token secret")
 	flag.StringVar(&cfg.RefreshTokenSecret, "rs", "", "refresh token secret")
+	flag.StringVar(&cfg.LogLevel, "l", "", "log level")
 	flag.Parse()
 
 	cfg.RunAddress = getEnvOrDefault("RUN_ADDRESS", cfg.RunAddress)
@@ -38,6 +40,7 @@ func Init() (*Config, error) {
 	cfg.AcccrualSystemAddress = getEnvOrDefault("ACCRUAL_SYSTEM_ADDRESS", cfg.AcccrualSystemAddress)
 	cfg.AccessTokenSecret = getEnvOrDefault("ACCESS_TOKEN_SECRET", cfg.AccessTokenSecret)
 	cfg.RefreshTokenSecret = getEnvOrDefault("REFRESH_TOKEN_SECRET", cfg.RefreshTokenSecret)
+	cfg.LogLevel = getEnvOrDefault("LOG_LEVEL", cfg.LogLevel)
 
 	if cfg.AccessTokenSecret == "" {
 		return nil, errors.New("access token secret not provided")

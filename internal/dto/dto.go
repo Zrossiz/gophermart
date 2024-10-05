@@ -7,3 +7,8 @@ type CreateBalanceHistory struct {
 	UserID  int64           `json:"user_id"`
 	Change  decimal.Decimal `json:"change"`
 }
+
+type Registration struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
