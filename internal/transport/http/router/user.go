@@ -3,7 +3,6 @@ package router
 import (
 	"net/http"
 
-	"github.com/Zrossiz/gophermart/internal/transport/http/handler"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -18,7 +17,7 @@ func NewUserRouter() *UserRouter {
 	return &UserRouter{}
 }
 
-func (u *UserRouter) RegisterRoutes(r chi.Router, h *handler.UserHandler) {
+func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
 	r.Route("/user", func(r chi.Router) {
 	})
 }
