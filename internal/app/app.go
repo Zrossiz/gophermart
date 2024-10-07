@@ -37,8 +37,13 @@ func Start() {
 		StatusStorage:         &db.StatusStore,
 	})
 
-	h := handler.New(s)
-	r := router.New()
+	h := handler.New(handler.Service{
+		UserService:           s.UserService,
+		BalanceHistoryService: s.BalanceHistoryService,
+		OrderService:          s.OrderService,
+		StatusService:         s.StatusService,
+	})
+	r := router.New(h)
 
 	srv := &http.Server{
 		Addr:    cfg.RunAddress,

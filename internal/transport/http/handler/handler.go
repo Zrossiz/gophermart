@@ -8,9 +8,13 @@ type Handler struct {
 }
 
 type Service struct {
+	UserService           UserService
+	OrderService          OrderService
+	StatusService         StatusService
+	BalanceHistoryService BalanceHistoryService
 }
 
-func New() *Handler {
+func New(serv Service) *Handler {
 	return &Handler{
 		UserHandler:           NewUserHandler(),
 		BalanceHistoryHandler: NewBalanceHistoryHandler(),

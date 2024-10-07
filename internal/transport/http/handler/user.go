@@ -5,6 +5,11 @@ import "net/http"
 type UserHandler struct {
 }
 
+type UserService interface {
+	Login()
+	Registration()
+}
+
 func NewUserHandler() *UserHandler {
 	return &UserHandler{}
 }
