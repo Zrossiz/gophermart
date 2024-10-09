@@ -29,6 +29,7 @@ func Start() {
 		log.Sugar().Fatalf("erro connect to db: %v", err)
 	}
 	db := postgresql.New(dbConn)
+
 	s := service.New(service.Storage{
 		UserStorage:           &db.UserStore,
 		BalanceHistoryStorage: &db.BalanceHistoryStore,
