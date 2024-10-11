@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Zrossiz/gophermart/internal/config"
@@ -15,20 +16,22 @@ import (
 func Start() {
 	cfg, err := config.Init()
 	if err != nil {
+		fmt.Println(err)
 		zap.S().Fatalf("config init error: %v", err)
 	}
 
 	zapLogger, err := logger.New(cfg.LogLevel)
 	if err != nil {
+		fmt.Println(err)
 		zap.S().Fatalf("logger int error: %v", err)
 	}
 	log := zapLogger.ZapLogger
 
 	dbConn, err := postgresql.Connect(cfg.DBDSN)
 	if err != nil {
-		log.Sugar().Fatalf("erro connect to db: %v", err)
+		log.Sugar().Fatalf("error connect to db: %v", err)
 	}
-	db := postgresql.New(dbConn)
+	db := postgresql.New(dbConn, log)
 
 	s := service.New(service.Storage{
 		UserStorage:           &db.UserStore,
@@ -36,7 +39,7 @@ func Start() {
 		OrderStorage:          &db.OrderStore,
 		TokenStorage:          &db.TokenStore,
 		StatusStorage:         &db.StatusStore,
-	})
+	}, cfg, log)
 
 	h := handler.New(handler.Service{
 		UserService:           s.UserService,
@@ -51,6 +54,7 @@ func Start() {
 		Handler: r,
 	}
 
+	log.Sugar().Infof("Starting server on addr: %v", srv.Addr)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal("Failed to start server", zap.Error(err))
 	}

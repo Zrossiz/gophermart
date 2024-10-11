@@ -1,5 +1,10 @@
 package service
 
+import (
+	"github.com/Zrossiz/gophermart/internal/config"
+	"go.uber.org/zap"
+)
+
 type Service struct {
 	UserService           *UserService
 	BalanceHistoryService *BalanceHistoryService
@@ -16,9 +21,14 @@ type Storage struct {
 	StatusStorage         StatusStorage
 }
 
-func New(db Storage) *Service {
+func New(db Storage, cfg *config.Config, log *zap.Logger) *Service {
 	return &Service{
-		UserService:           NewUserService(db.UserStorage),
+		UserService: NewUserService(
+			db.UserStorage,
+			db.TokenStorage,
+			cfg,
+			log,
+		),
 		BalanceHistoryService: NewBalanceHistoryService(db.BalanceHistoryStorage),
 		RefreshTokenService:   NewRefreshTokenService(db.TokenStorage),
 		StatusService:         NewStatusService(db.StatusStorage),

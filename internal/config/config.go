@@ -4,6 +4,9 @@ import (
 	"errors"
 	"flag"
 	"os"
+	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -13,6 +16,7 @@ type Config struct {
 	AccessTokenSecret     string
 	RefreshTokenSecret    string
 	LogLevel              string
+	Cost                  int
 }
 
 var AppConfig *Config
@@ -24,15 +28,29 @@ func getEnvOrDefault(key, defaultValue string) string {
 	return defaultValue
 }
 
+func getIntEnvOrDefault(key string, defaultValue int) (int, error) {
+	if value := os.Getenv(key); value != "" {
+		intValue, err := strconv.Atoi(value)
+		if err != nil {
+			return 0, nil
+		}
+		return intValue, nil
+	}
+	return defaultValue, nil
+}
+
 func Init() (*Config, error) {
+	_ = godotenv.Load()
+
 	cfg := &Config{}
 
 	flag.StringVar(&cfg.RunAddress, "a", "", "server address")
 	flag.StringVar(&cfg.DBDSN, "d", "", "db dsn")
-	flag.StringVar(&cfg.AcccrualSystemAddress, "r", "", "accrual system address")
-	flag.StringVar(&cfg.AccessTokenSecret, "as", "", "access token secret")
-	flag.StringVar(&cfg.RefreshTokenSecret, "rs", "", "refresh token secret")
-	flag.StringVar(&cfg.LogLevel, "l", "", "log level")
+	flag.StringVar(&cfg.AcccrualSystemAddress, "r", "0.0.0.0:1234", "accrual system address")
+	flag.StringVar(&cfg.AccessTokenSecret, "as", "access_secret", "access token secret")
+	flag.StringVar(&cfg.RefreshTokenSecret, "rs", "refresh_secret", "refresh token secret")
+	flag.StringVar(&cfg.LogLevel, "l", "WARN", "log level")
+	flag.IntVar(&cfg.Cost, "s", 20, "cost for hash password")
 	flag.Parse()
 
 	cfg.RunAddress = getEnvOrDefault("RUN_ADDRESS", cfg.RunAddress)
@@ -41,6 +59,11 @@ func Init() (*Config, error) {
 	cfg.AccessTokenSecret = getEnvOrDefault("ACCESS_TOKEN_SECRET", cfg.AccessTokenSecret)
 	cfg.RefreshTokenSecret = getEnvOrDefault("REFRESH_TOKEN_SECRET", cfg.RefreshTokenSecret)
 	cfg.LogLevel = getEnvOrDefault("LOG_LEVEL", cfg.LogLevel)
+	cost, err := getIntEnvOrDefault("COST", 4)
+	if err != nil {
+		return nil, errors.New("invalid cost value")
+	}
+	cfg.Cost = cost
 
 	if cfg.AccessTokenSecret == "" {
 		return nil, errors.New("access token secret not provided")

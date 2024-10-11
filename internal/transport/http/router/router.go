@@ -19,7 +19,7 @@ func New(h *handler.Handler) http.Handler {
 
 	router := &Router{
 		Order:          *NewOrderRouter(),
-		User:           *NewUserRouter(),
+		User:           *NewUserRouter(h.UserHandler),
 		BalanceHistory: *NewBalanceHistoryRouter(),
 		Status:         *NewStatusRouter(),
 	}

@@ -9,13 +9,12 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
-	"go.uber.org/zap"
 )
 
 func main() {
 	_ = godotenv.Load()
-	DBDSN := os.Getenv("DB_DSN")
-
+	DBDSN := os.Getenv("DATABASE_URI")
+	fmt.Println("start migrate: %s", DBDSN)
 	db, err := pgxpool.Connect(context.Background(), DBDSN)
 	if err != nil {
 		fmt.Printf("error connecting to db: %v\n", err)
@@ -30,12 +29,12 @@ func main() {
 	if filenameFlag == "" {
 		err = migrateAll(db)
 		if err != nil {
-			zap.S().Fatalf("error migrate all files: %v\n", err)
+			fmt.Printf("error migrate all files: %v\n", err)
 		}
 	} else {
 		err = migrateOne(db, filenameFlag)
 		if err != nil {
-			zap.S().Fatalf("error migrate file: %v\n", err)
+			fmt.Printf("error migrate file: %v\n", err)
 		}
 	}
 

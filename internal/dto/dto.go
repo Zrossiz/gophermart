@@ -9,6 +9,6 @@ type CreateBalanceHistory struct {
 }
 
 type Registration struct {
-	Login    string `json:"login"`
+	Login    string `json:"username"`
 	Password string `json:"password"`
 }

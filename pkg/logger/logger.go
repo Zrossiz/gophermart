@@ -32,7 +32,7 @@ func New(level string) (*Logger, error) {
 		Level:            atomicLevel,
 		Encoding:         "json",
 		EncoderConfig:    zap.NewProductionEncoderConfig(),
-		OutputPaths:      []string{"stdout"},
+		OutputPaths:      []string{"stdout", "logs/app.json"},
 		ErrorOutputPaths: []string{"stderr", "logs/error.json"},
 	}
 	zapLogger, err := config.Build()

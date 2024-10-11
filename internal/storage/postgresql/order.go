@@ -5,14 +5,16 @@ import (
 
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"go.uber.org/zap"
 )
 
 type OrderStore struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	log *zap.Logger
 }
 
-func NewOrderStore(db *pgxpool.Pool) OrderStore {
-	return OrderStore{db: db}
+func NewOrderStore(db *pgxpool.Pool, log *zap.Logger) OrderStore {
+	return OrderStore{db: db, log: log}
 }
 
 func (o *OrderStore) CreateOrder(order *model.Order) (bool, error) {

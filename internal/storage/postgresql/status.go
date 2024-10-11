@@ -5,14 +5,16 @@ import (
 
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"go.uber.org/zap"
 )
 
 type StatusStore struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	log *zap.Logger
 }
 
-func NewStatusStore(db *pgxpool.Pool) StatusStore {
-	return StatusStore{db: db}
+func NewStatusStore(db *pgxpool.Pool, log *zap.Logger) StatusStore {
+	return StatusStore{db: db, log: log}
 }
 
 func (s *StatusStore) Create(status string) (bool, error) {

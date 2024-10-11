@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	"go.uber.org/zap"
 )
 
 type DBStorage struct {
@@ -24,13 +25,13 @@ func Connect(dsn string) (*pgxpool.Pool, error) {
 	return db, nil
 }
 
-func New(dbConn *pgxpool.Pool) DBStorage {
+func New(dbConn *pgxpool.Pool, log *zap.Logger) DBStorage {
 
 	return DBStorage{
-		BalanceHistoryStore: NewBalanceHistoryStore(dbConn),
-		UserStore:           NewUserStore(dbConn),
-		OrderStore:          NewOrderStore(dbConn),
-		TokenStore:          NewTokenStore(dbConn),
-		StatusStore:         NewStatusStore(dbConn),
+		BalanceHistoryStore: NewBalanceHistoryStore(dbConn, log),
+		UserStore:           NewUserStore(dbConn, log),
+		OrderStore:          NewOrderStore(dbConn, log),
+		TokenStore:          NewTokenStore(dbConn, log),
+		StatusStore:         NewStatusStore(dbConn, log),
 	}
 }

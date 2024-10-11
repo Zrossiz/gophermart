@@ -6,14 +6,16 @@ import (
 	"github.com/Zrossiz/gophermart/internal/dto"
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"go.uber.org/zap"
 )
 
 type BalanceHistoryStore struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	log *zap.Logger
 }
 
-func NewBalanceHistoryStore(db *pgxpool.Pool) BalanceHistoryStore {
-	return BalanceHistoryStore{db: db}
+func NewBalanceHistoryStore(db *pgxpool.Pool, log *zap.Logger) BalanceHistoryStore {
+	return BalanceHistoryStore{db: db, log: log}
 }
 
 func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory) (bool, error) {
