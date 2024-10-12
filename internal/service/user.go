@@ -97,8 +97,53 @@ func (u *UserService) Registration(registrationDTO dto.Registration) (string, st
 	return accessToken, refreshToken, nil
 }
 
-func (u *UserService) Login() {
+func (u *UserService) Login(loginDTO dto.Registration) (string, string, error) {
+	curUser, err := u.dbUser.GetUserByName(loginDTO.Login)
+	if err != nil {
+		u.log.Error(err.Error())
+		return "", "", apperrors.ErrDBQuery
+	}
 
+	if curUser == nil {
+		return "", "", apperrors.ErrUserNotFound
+	}
+
+	hashedPassword, err := hashPassword(loginDTO.Password, u.cfg.Cost)
+	if err != nil {
+		return "", "", apperrors.ErrHashPassword
+	}
+
+	if hashedPassword != loginDTO.Password {
+		return "", "", apperrors.ErrInvalidPassword
+	}
+
+	JWTAccessProps := utils.GenerateJWTProps{
+		Secret:   []byte(u.cfg.AccessTokenSecret),
+		Exprires: time.Now().Add(15 * time.Minute),
+		UserID:   int64(curUser.ID),
+		Username: curUser.Name,
+	}
+
+	accessToken, err := utils.GenerateJWT(JWTAccessProps)
+	if err != nil {
+		u.log.Error(err.Error())
+		return "", "", apperrors.ErrJWTGeneration
+	}
+
+	JWTRefreshProps := utils.GenerateJWTProps{
+		Secret:   []byte(u.cfg.RefreshTokenSecret),
+		Exprires: time.Now().Add(24 * 30 * time.Hour),
+		UserID:   int64(curUser.ID),
+		Username: curUser.Name,
+	}
+
+	refreshToken, err := utils.GenerateJWT(JWTRefreshProps)
+	if err != nil {
+		u.log.Error(err.Error())
+		return "", "", apperrors.ErrJWTGeneration
+	}
+
+	return accessToken, refreshToken, nil
 }
 
 func hashPassword(password string, cost int) (string, error) {
