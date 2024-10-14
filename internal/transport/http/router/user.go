@@ -15,6 +15,7 @@ type UserHandler interface {
 	Login(rw http.ResponseWriter, r *http.Request)
 	Registration(rw http.ResponseWriter, r *http.Request)
 	UploadOrder(rw http.ResponseWriter, r *http.Request)
+	GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request)
 }
 
 func NewUserRouter(h UserHandler) *UserRouter {
@@ -26,5 +27,6 @@ func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
 		r.Post(("/register"), u.handler.Registration)
 		r.Post("/login", u.handler.Login)
 		r.With(middleware.JWTMiddleware).Post("/orders", u.handler.UploadOrder)
+		r.With(middleware.JWTMiddleware).Get("/orders", u.handler.GetAllOrdersByUser)
 	})
 }

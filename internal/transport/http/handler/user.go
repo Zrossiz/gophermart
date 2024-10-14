@@ -164,15 +164,9 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDContextKey).(string)
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
-		return
-	}
-
-	numID, err := strconv.Atoi(userID)
-	if err != nil {
-		http.Error(rw, "invalid id from token", http.StatusBadRequest)
 		return
 	}
 
@@ -189,18 +183,37 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = u.orderService.UploadOrder(orderID, numID)
+	err = u.orderService.UploadOrder(orderID, userID)
 	if err != nil {
 		switch err {
+		case apperrors.ErrOrderAlreadyUploaded:
+			http.Error(rw, "order already exist", http.StatusOK)
+		case apperrors.ErrOrderAlreadyUploadedByAnotherUser:
+			http.Error(rw, "order already uploaded by another user", http.StatusConflict)
 		case apperrors.ErrDBQuery:
 			http.Error(rw, "internal server error", http.StatusInternalServerError)
 		case apperrors.ErrInvalidOrderId:
-			http.Error(rw, "invalid order id", http.StatusBadRequest)
+			http.Error(rw, "invalid order id", http.StatusUnprocessableEntity)
 		default:
 			fmt.Println(err)
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
 		}
 		return
+	}
+
+	rw.WriteHeader(http.StatusAccepted)
+}
+
+func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
+	if !ok {
+		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	_, err := u.orderService.GetAllOrdersByUser(userID)
+	if err != nil {
+		http.Error(rw, "failed to insert", http.StatusInternalServerError)
 	}
 
 	rw.WriteHeader(http.StatusOK)

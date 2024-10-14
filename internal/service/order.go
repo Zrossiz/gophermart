@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"strconv"
 	"unicode"
 
@@ -19,6 +18,7 @@ type OrderStorage interface {
 	CreateOrder(orderId int, userId int) (bool, error)
 	GetAllOrdersByUser(userID int64) ([]model.Order, error)
 	UpdateStatusOrder(orderID int64, statusID int) (bool, error)
+	GetOrderById(orderId int) (*model.Order, error)
 }
 
 func NewOrderService(db OrderStorage, log *zap.Logger) *OrderService {
@@ -29,19 +29,42 @@ func NewOrderService(db OrderStorage, log *zap.Logger) *OrderService {
 }
 
 func (o *OrderService) UploadOrder(order int, userId int) error {
+	existOrder, err := o.db.GetOrderById(order)
+	if err != nil {
+		o.log.Error(err.Error())
+		return apperrors.ErrDBQuery
+	}
+
+	if existOrder != nil {
+		return apperrors.ErrOrderAlreadyUploaded
+	}
+
+	if existOrder.UserID != userId {
+		return apperrors.ErrOrderAlreadyUploadedByAnotherUser
+	}
+
 	luhn := isLuhn(strconv.Itoa(order))
-	fmt.Println("luhn: ", luhn)
 	if !luhn {
 		return apperrors.ErrInvalidOrderId
 	}
 
-	_, err := o.db.CreateOrder(order, userId)
+	_, err = o.db.CreateOrder(order, userId)
 	if err != nil {
 		o.log.Error(err.Error())
 		return apperrors.ErrDBQuery
 	}
 
 	return nil
+}
+
+func (o *OrderService) GetAllOrdersByUser(userId int) ([]model.Order, error) {
+	orders, err := o.db.GetAllOrdersByUser(int64(userId))
+	if err != nil {
+		o.log.Error(err.Error())
+		return make([]model.Order, 0), apperrors.ErrDBQuery
+	}
+
+	return orders, nil
 }
 
 func isLuhn(orderId string) bool {

@@ -25,7 +25,7 @@ type Status struct {
 type Order struct {
 	OrderID     int             `json:"order_id" db:"order_id"`
 	UserID      int             `json:"user_id" db:"user_id"`
-	StatusID    int             `json:"status_id" db:"status_id"`
+	Status      string          `json:"status,omitempty" db:"status"`
 	Accrual     decimal.Decimal `json:"accrual" db:"accrual"`
 	ProcessedAt time.Time       `json:"processed_at" db:"processed_at"`
 	CreatedAt   time.Time       `json:"created_at" db:"created_at"`

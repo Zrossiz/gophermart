@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Zrossiz/gophermart/internal/config"
 	"github.com/golang-jwt/jwt/v5"
@@ -41,15 +42,16 @@ func JWTMiddleware(next http.Handler) http.Handler {
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			var userID string
+			var userID int
 			var okID bool
 			if idVal, ok := claims["userId"]; ok {
 				switch v := idVal.(type) {
 				case string:
-					userID = v
-					okID = true
-				case float64:
-					userID = fmt.Sprintf("%.0f", v)
+					userID, err = strconv.Atoi(v)
+					if err != nil {
+						http.Error(w, "unauthorized", http.StatusUnauthorized)
+						return
+					}
 					okID = true
 				}
 			}
@@ -57,7 +59,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 			userName, okName := claims["userName"].(string)
 
 			if !okID || !okName {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return
 			}
 
