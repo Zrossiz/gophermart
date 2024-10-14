@@ -108,12 +108,8 @@ func (u *UserService) Login(loginDTO dto.Registration) (string, string, error) {
 		return "", "", apperrors.ErrUserNotFound
 	}
 
-	hashedPassword, err := hashPassword(loginDTO.Password, u.cfg.Cost)
+	err = bcrypt.CompareHashAndPassword([]byte(curUser.Password), []byte(loginDTO.Password))
 	if err != nil {
-		return "", "", apperrors.ErrHashPassword
-	}
-
-	if hashedPassword != loginDTO.Password {
 		return "", "", apperrors.ErrInvalidPassword
 	}
 

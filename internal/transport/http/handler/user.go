@@ -119,7 +119,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refreshTokenCokie := http.Cookie{
+	refreshTokenCookie := http.Cookie{
 		Name:     "refreshtoken",
 		Value:    refreshToken,
 		Path:     "/",
@@ -137,7 +137,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		Secure:   false,
 	}
 
-	http.SetCookie(rw, &refreshTokenCokie)
+	http.SetCookie(rw, &refreshTokenCookie)
 	http.SetCookie(rw, &accessTokenCookie)
 	response := map[string]string{
 		"message": "login successful",
@@ -145,5 +145,9 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-	json.NewEncoder(rw).Encode(response)
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		http.Error(rw, "failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }
