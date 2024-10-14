@@ -32,5 +32,6 @@ func New(db Storage, cfg *config.Config, log *zap.Logger) *Service {
 		BalanceHistoryService: NewBalanceHistoryService(db.BalanceHistoryStorage),
 		RefreshTokenService:   NewRefreshTokenService(db.TokenStorage),
 		StatusService:         NewStatusService(db.StatusStorage),
+		OrderService:          NewOrderService(db.OrderStorage, log),
 	}
 }

@@ -17,9 +17,9 @@ func NewOrderStore(db *pgxpool.Pool, log *zap.Logger) OrderStore {
 	return OrderStore{db: db, log: log}
 }
 
-func (o *OrderStore) CreateOrder(order *model.Order) (bool, error) {
-	sql := `INSERT INTO "order" (order_id, user_id, status_id, accrual, processed_at) VALUES ($1, $2, $3, $4, $5)`
-	_, err := o.db.Exec(context.Background(), sql, order.OrderID, order.UserID, order.StatusID, order.Accrual, order.ProcessedAt)
+func (o *OrderStore) CreateOrder(orderId int, userId int) (bool, error) {
+	sql := `INSERT INTO orders (order_id, user_id, status_id) VALUES ($1, $2, $3)`
+	_, err := o.db.Exec(context.Background(), sql, orderId, userId, 1)
 	if err != nil {
 		return false, err
 	}
@@ -27,7 +27,7 @@ func (o *OrderStore) CreateOrder(order *model.Order) (bool, error) {
 }
 
 func (o *OrderStore) UpdateStatusOrder(orderID int64, statusID int) (bool, error) {
-	sql := `UPDATE "order" SET status_id = $1, updated_at = NOW() WHERE order_id = $2`
+	sql := `UPDATE orders SET status_id = $1, updated_at = NOW() WHERE order_id = $2`
 	cmdTag, err := o.db.Exec(context.Background(), sql, statusID, orderID)
 	if err != nil {
 		return false, err
@@ -39,7 +39,7 @@ func (o *OrderStore) UpdateStatusOrder(orderID int64, statusID int) (bool, error
 }
 
 func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
-	sql := `SELECT order_id, user_id, status_id, accrual, processed_at, created_at, updated_at FROM "order" WHERE user_id = $1`
+	sql := `SELECT order_id, user_id, status_id, accrual, processed_at, created_at, updated_at FROM orders WHERE user_id = $1`
 	rows, err := o.db.Query(context.Background(), sql, userID)
 	if err != nil {
 		return nil, err

@@ -10,4 +10,5 @@ var (
 	ErrHashPassword      = errors.New("error hashing password")
 	ErrJWTGeneration     = errors.New("error generating JWT")
 	ErrSaveToken         = errors.New("error saving token")
+	ErrInvalidOrderId    = errors.New("invalid order id")
 )

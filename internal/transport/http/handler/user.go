@@ -2,15 +2,20 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
+	"github.com/Zrossiz/gophermart/internal/middleware"
 )
 
 type UserHandler struct {
-	service UserService
+	userService  UserService
+	orderService OrderService
 }
 
 type UserService interface {
@@ -18,8 +23,11 @@ type UserService interface {
 	Login(loginDTO dto.Registration) (string, string, error)
 }
 
-func NewUserHandler(service UserService) *UserHandler {
-	return &UserHandler{service: service}
+func NewUserHandler(userService UserService, orderSerice OrderService) *UserHandler {
+	return &UserHandler{
+		userService:  userService,
+		orderService: orderSerice,
+	}
 }
 
 func (u *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
@@ -41,7 +49,7 @@ func (u *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, refreshToken, err := u.service.Registration(registrationDTO)
+	accessToken, refreshToken, err := u.userService.Registration(registrationDTO)
 	if err != nil {
 		switch err {
 		case apperrors.ErrUserAlreadyExists:
@@ -104,16 +112,19 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, refreshToken, err := u.service.Login(loginDTO)
+	accessToken, refreshToken, err := u.userService.Login(loginDTO)
 	if err != nil {
 		switch err {
 		case apperrors.ErrInvalidPassword:
 			http.Error(rw, "unauthorized", http.StatusUnauthorized)
+		case apperrors.ErrUserAlreadyExists:
+			http.Error(rw, "user not found", http.StatusBadRequest)
 		case apperrors.ErrDBQuery:
 			http.Error(rw, "internal server error", http.StatusInternalServerError)
 		case apperrors.ErrHashPassword, apperrors.ErrJWTGeneration:
 			http.Error(rw, "error processing request", http.StatusInternalServerError)
 		default:
+			fmt.Println(err)
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
 		}
 		return
@@ -150,4 +161,47 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "failed to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(string)
+	if !ok {
+		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	numID, err := strconv.Atoi(userID)
+	if err != nil {
+		http.Error(rw, "invalid id from token", http.StatusBadRequest)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(rw, "unable to read request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	orderID, err := strconv.Atoi(string(body))
+	if err != nil {
+		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = u.orderService.UploadOrder(orderID, numID)
+	if err != nil {
+		switch err {
+		case apperrors.ErrDBQuery:
+			http.Error(rw, "internal server error", http.StatusInternalServerError)
+		case apperrors.ErrInvalidOrderId:
+			http.Error(rw, "invalid order id", http.StatusBadRequest)
+		default:
+			fmt.Println(err)
+			http.Error(rw, "unknown error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
 }

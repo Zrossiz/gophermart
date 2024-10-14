@@ -43,7 +43,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			var userID string
 			var okID bool
-			if idVal, ok := claims["id"]; ok {
+			if idVal, ok := claims["userId"]; ok {
 				switch v := idVal.(type) {
 				case string:
 					userID = v
@@ -54,7 +54,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 				}
 			}
 
-			userName, okName := claims["name"].(string)
+			userName, okName := claims["userName"].(string)
 
 			if !okID || !okName {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)

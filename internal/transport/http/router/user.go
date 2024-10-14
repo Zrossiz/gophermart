@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/Zrossiz/gophermart/internal/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -13,6 +14,7 @@ type UserRouter struct {
 type UserHandler interface {
 	Login(rw http.ResponseWriter, r *http.Request)
 	Registration(rw http.ResponseWriter, r *http.Request)
+	UploadOrder(rw http.ResponseWriter, r *http.Request)
 }
 
 func NewUserRouter(h UserHandler) *UserRouter {
@@ -23,5 +25,6 @@ func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
 	r.Route("/api/user", func(r chi.Router) {
 		r.Post(("/register"), u.handler.Registration)
 		r.Post("/login", u.handler.Login)
+		r.With(middleware.JWTMiddleware).Post("/orders", u.handler.UploadOrder)
 	})
 }
