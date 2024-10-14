@@ -21,7 +21,7 @@ func New(h *handler.Handler) http.Handler {
 		Order:          *NewOrderRouter(),
 		User:           *NewUserRouter(h.UserHandler),
 		BalanceHistory: *NewBalanceHistoryRouter(),
-		Status:         *NewStatusRouter(),
+		Status:         *NewStatusRouter(h.StatusHandler),
 	}
 
 	router.User.RegisterRoutes(r, h.UserHandler)

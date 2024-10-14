@@ -12,3 +12,7 @@ type Registration struct {
 	Login    string `json:"username"`
 	Password string `json:"password"`
 }
+
+type CreateStatus struct {
+	Name string `json:"name"`
+}

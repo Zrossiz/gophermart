@@ -18,7 +18,7 @@ func NewStatusStore(db *pgxpool.Pool, log *zap.Logger) StatusStore {
 }
 
 func (s *StatusStore) Create(status string) (bool, error) {
-	sql := `INSERT INTO status (status) VALUES ($1)`
+	sql := `INSERT INTO statuses (status) VALUES ($1)`
 	_, err := s.db.Exec(context.Background(), sql, status)
 	if err != nil {
 		return false, err
@@ -28,7 +28,7 @@ func (s *StatusStore) Create(status string) (bool, error) {
 }
 
 func (s *StatusStore) GetAll() ([]model.Status, error) {
-	sql := `SELECT id, status, created_at, updated_at FROM status`
+	sql := `SELECT id, status, created_at, updated_at FROM statuses`
 	rows, err := s.db.Query(context.Background(), sql)
 	if err != nil {
 		return nil, err

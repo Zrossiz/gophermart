@@ -1,11 +1,12 @@
 package service
 
 import (
+	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/model"
 )
 
 type StatusService struct {
-	db *StatusStorage
+	db StatusStorage
 }
 
 type StatusStorage interface {
@@ -15,6 +16,15 @@ type StatusStorage interface {
 
 func NewStatusService(statusStorage StatusStorage) *StatusService {
 	return &StatusService{
-		db: &statusStorage,
+		db: statusStorage,
 	}
+}
+
+func (s *StatusService) Create(name string) error {
+	_, err := s.db.Create(name)
+	if err != nil {
+		return apperrors.ErrDBQuery
+	}
+
+	return nil
 }

@@ -4,7 +4,7 @@ type Handler struct {
 	UserHandler           *UserHandler
 	BalanceHistoryHandler *BalanceHistoryHandler
 	OrderHandler          *OrderHandler
-	StatusHandler         *StatusHanlder
+	StatusHandler         *StatusHandler
 }
 
 type Service struct {
@@ -18,7 +18,7 @@ func New(serv Service) *Handler {
 	return &Handler{
 		UserHandler:           NewUserHandler(serv.UserService, serv.OrderService),
 		BalanceHistoryHandler: NewBalanceHistoryHandler(),
-		StatusHandler:         NewStatusHandler(),
+		StatusHandler:         NewStatusHandler(serv.StatusService),
 		OrderHandler:          NewOrderHandler(),
 	}
 }
