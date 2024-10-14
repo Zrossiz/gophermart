@@ -56,7 +56,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 				}
 			}
 
-			userName, okName := claims["userName"].(string)
+			username, okName := claims["userName"].(string)
 
 			if !okID || !okName {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
@@ -64,7 +64,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 			}
 
 			ctx := context.WithValue(r.Context(), UserIDContextKey, userID)
-			ctx = context.WithValue(ctx, UserNameContextKey, userName)
+			ctx = context.WithValue(ctx, UserNameContextKey, username)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 			return

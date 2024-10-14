@@ -83,3 +83,20 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 
 	return orders, nil
 }
+
+func (o *OrderStore) GetAllWithdrawnByUser(userID int64) (float64, error) {
+	var totalChange float64
+
+	sql := `
+		SELECT SUM(change) as total_change
+		FROM balance_history
+		WHERE user_id = $1
+	`
+
+	err := o.db.QueryRow(context.Background(), sql, userID).Scan(&totalChange)
+	if err != nil {
+		return 0, nil
+	}
+
+	return 0, nil
+}

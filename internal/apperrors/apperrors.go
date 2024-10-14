@@ -13,4 +13,5 @@ var (
 	ErrInvalidOrderId                    = errors.New("invalid order id")
 	ErrOrderAlreadyUploaded              = errors.New("order already uploaded")
 	ErrOrderAlreadyUploadedByAnotherUser = errors.New("order already uploaded by another user")
+	OrdersNotFound                       = errors.New("orders not found")
 )

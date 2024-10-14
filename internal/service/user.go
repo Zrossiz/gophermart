@@ -16,6 +16,7 @@ import (
 type UserService struct {
 	dbUser  UserStorage
 	dbToken TokenStorage
+	dbOrder OrderStorage
 	cfg     config.Config
 	log     zap.Logger
 }
@@ -26,10 +27,17 @@ type UserStorage interface {
 	UpdateUserBalance(userID int64, balance decimal.Decimal) (bool, error)
 }
 
-func NewUserService(userStorage UserStorage, tokenStorage TokenStorage, cfg *config.Config, log *zap.Logger) *UserService {
+func NewUserService(
+	userStorage UserStorage,
+	tokenStorage TokenStorage,
+	orderStorage OrderStorage,
+	cfg *config.Config,
+	log *zap.Logger,
+) *UserService {
 	return &UserService{
 		dbUser:  userStorage,
 		dbToken: tokenStorage,
+		dbOrder: orderStorage,
 		cfg:     *cfg,
 		log:     *log,
 	}
@@ -140,6 +148,26 @@ func (u *UserService) Login(loginDTO dto.Registration) (string, string, error) {
 	}
 
 	return accessToken, refreshToken, nil
+}
+
+func (u *UserService) GetUserBalance(username string) (float64, float64, error) {
+	curUser, err := u.dbUser.GetUserByName(username)
+	if err != nil {
+		u.log.Error(err.Error())
+		return 0.00, 0.00, nil
+	}
+
+	if curUser == nil {
+		return 0.00, 0.00, apperrors.ErrUserNotFound
+	}
+
+	withdrawn, err := u.dbOrder.GetAllWithdrawnByUser(int64(curUser.ID))
+	if err != nil {
+		u.log.Error(err.Error())
+		return 0.00, 0.00, nil
+	}
+
+	return curUser.Account.InexactFloat64(), withdrawn, nil
 }
 
 func hashPassword(password string, cost int) (string, error) {

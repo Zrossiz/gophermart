@@ -26,6 +26,7 @@ func New(db Storage, cfg *config.Config, log *zap.Logger) *Service {
 		UserService: NewUserService(
 			db.UserStorage,
 			db.TokenStorage,
+			db.OrderStorage,
 			cfg,
 			log,
 		),

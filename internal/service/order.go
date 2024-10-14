@@ -19,6 +19,7 @@ type OrderStorage interface {
 	GetAllOrdersByUser(userID int64) ([]model.Order, error)
 	UpdateStatusOrder(orderID int64, statusID int) (bool, error)
 	GetOrderById(orderId int) (*model.Order, error)
+	GetAllWithdrawnByUser(userID int64) (float64, error)
 }
 
 func NewOrderService(db OrderStorage, log *zap.Logger) *OrderService {
@@ -35,12 +36,12 @@ func (o *OrderService) UploadOrder(order int, userId int) error {
 		return apperrors.ErrDBQuery
 	}
 
-	if existOrder != nil {
-		return apperrors.ErrOrderAlreadyUploaded
+	if existOrder != nil && existOrder.UserID != userId {
+		return apperrors.ErrOrderAlreadyUploadedByAnotherUser
 	}
 
-	if existOrder.UserID != userId {
-		return apperrors.ErrOrderAlreadyUploadedByAnotherUser
+	if existOrder != nil {
+		return apperrors.ErrOrderAlreadyUploaded
 	}
 
 	luhn := isLuhn(strconv.Itoa(order))
@@ -62,6 +63,10 @@ func (o *OrderService) GetAllOrdersByUser(userId int) ([]model.Order, error) {
 	if err != nil {
 		o.log.Error(err.Error())
 		return make([]model.Order, 0), apperrors.ErrDBQuery
+	}
+
+	if len(orders) == 0 {
+		return make([]model.Order, 0), apperrors.OrdersNotFound
 	}
 
 	return orders, nil

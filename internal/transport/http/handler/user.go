@@ -21,6 +21,7 @@ type UserHandler struct {
 type UserService interface {
 	Registration(registrationDTO dto.Registration) (string, string, error)
 	Login(loginDTO dto.Registration) (string, string, error)
+	GetUserBalance(username string) (float64, float64, error)
 }
 
 func NewUserHandler(userService UserService, orderSerice OrderService) *UserHandler {
@@ -217,4 +218,31 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 	}
 
 	rw.WriteHeader(http.StatusOK)
+}
+
+func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
+	username, ok := r.Context().Value(middleware.UserNameContextKey).(string)
+	if !ok {
+		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	current, withdrawn, err := u.userService.GetUserBalance(username)
+	if err != nil {
+		http.Error(rw, "unknown error", http.StatusInternalServerError)
+		return
+	}
+
+	response := dto.BalanceUser{
+		Current:   current,
+		Withdrawn: withdrawn,
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)
+
+	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
+	}
 }
