@@ -21,3 +21,8 @@ type BalanceUser struct {
 	Current   float64 `json:"current"`
 	Withdrawn float64 `json:"withrawn"`
 }
+
+type Withdraw struct {
+	Sum   float64 `json:"sum"`
+	Order float64 `json:"order"`
+}

@@ -2,10 +2,10 @@ package service
 
 import (
 	"strconv"
-	"unicode"
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/model"
+	"github.com/Zrossiz/gophermart/internal/utils"
 	"go.uber.org/zap"
 )
 
@@ -44,7 +44,7 @@ func (o *OrderService) UploadOrder(order int, userId int) error {
 		return apperrors.ErrOrderAlreadyUploaded
 	}
 
-	luhn := isLuhn(strconv.Itoa(order))
+	luhn := utils.IsLuhn(strconv.Itoa(order))
 	if !luhn {
 		return apperrors.ErrInvalidOrderId
 	}
@@ -66,35 +66,8 @@ func (o *OrderService) GetAllOrdersByUser(userId int) ([]model.Order, error) {
 	}
 
 	if len(orders) == 0 {
-		return make([]model.Order, 0), apperrors.OrdersNotFound
+		return make([]model.Order, 0), apperrors.ErrOrdersNotFound
 	}
 
 	return orders, nil
-}
-
-func isLuhn(orderId string) bool {
-	var sum int
-	var alternate bool
-
-	for i := len(orderId) - 1; i >= 0; i-- {
-		r := rune(orderId[i])
-
-		if !unicode.IsDigit(r) {
-			return false
-		}
-
-		n, _ := strconv.Atoi(string(r))
-
-		if alternate {
-			n *= 2
-			if n > 9 {
-				n -= 9
-			}
-		}
-
-		sum += n
-		alternate = !alternate
-	}
-
-	return sum%10 == 0
 }

@@ -3,6 +3,7 @@ package postgresql
 import (
 	"context"
 
+	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -52,4 +53,41 @@ func (b *BalanceHistoryStore) GetAllDebits(userID int64) ([]model.BalanceHistory
 	}
 
 	return histories, nil
+}
+
+func (b *BalanceHistoryStore) Withdraw(userId, orderId, sum int) error {
+	tx, err := b.db.Begin(context.Background())
+	if err != nil {
+		b.log.Error("failed to start transaction")
+		return err
+	}
+	defer tx.Rollback(context.Background())
+
+	var currentBalance int
+	checkBalanceSQL := `SELECT account FROM users WHERE id = $1`
+	err = tx.QueryRow(context.Background(), checkBalanceSQL, userId).Scan(&currentBalance)
+	if err != nil {
+		b.log.Error("failed to check baalnce", zap.Error(err))
+		return err
+	}
+
+	residualAmount := currentBalance - sum
+
+	if residualAmount < 0 {
+		return apperrors.ErrNotEnoughMoney
+	}
+
+	updateBalanceSQL := `UPDATE users SET balance = $1 WHERE id = $2`
+	_, err = tx.Exec(context.Background(), updateBalanceSQL, sum, userId)
+	if err != nil {
+		b.log.Error("failed to insert balance history", zap.Error(err))
+		return err
+	}
+
+	if err := tx.Commit(context.Background()); err != nil {
+		b.log.Error("failed to commit transaction", zap.Error(err))
+		return err
+	}
+
+	return nil
 }

@@ -17,6 +17,7 @@ type UserHandler interface {
 	UploadOrder(rw http.ResponseWriter, r *http.Request)
 	GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request)
 	GetUserBalance(rw http.ResponseWriter, r *http.Request)
+	Withdraw(rw http.ResponseWriter, r *http.Request)
 }
 
 func NewUserRouter(h UserHandler) *UserRouter {
@@ -30,5 +31,6 @@ func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
 		r.With(middleware.JWTMiddleware).Post("/orders", u.handler.UploadOrder)
 		r.With(middleware.JWTMiddleware).Get("/orders", u.handler.GetAllOrdersByUser)
 		r.With(middleware.JWTMiddleware).Get("/balance", u.handler.GetUserBalance)
+		r.With(middleware.JWTMiddleware).Post("/balance/withdraw", u.handler.Withdraw)
 	})
 }

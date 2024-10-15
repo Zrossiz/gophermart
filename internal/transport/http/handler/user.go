@@ -14,8 +14,9 @@ import (
 )
 
 type UserHandler struct {
-	userService  UserService
-	orderService OrderService
+	userService           UserService
+	orderService          OrderService
+	balanceHistoryService BalanceHistoryService
 }
 
 type UserService interface {
@@ -24,7 +25,11 @@ type UserService interface {
 	GetUserBalance(username string) (float64, float64, error)
 }
 
-func NewUserHandler(userService UserService, orderSerice OrderService) *UserHandler {
+func NewUserHandler(
+	userService UserService,
+	orderSerice OrderService,
+	balanceHistoryService BalanceHistoryService,
+) *UserHandler {
 	return &UserHandler{
 		userService:  userService,
 		orderService: orderSerice,
@@ -162,6 +167,38 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "failed to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
+	if !ok {
+		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	var withdrawDTO dto.Withdraw
+
+	err := json.NewDecoder(r.Body).Decode(&withdrawDTO)
+	if err != nil {
+		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = u.balanceHistoryService.Withdraw(userID, int(withdrawDTO.Order), int(withdrawDTO.Sum))
+	if err != nil {
+		switch err {
+		case apperrors.ErrNotEnoughMoney:
+			http.Error(rw, "not enough money on account", http.StatusPaymentRequired)
+		case apperrors.ErrInvalidOrderId:
+			http.Error(rw, "invalid order id", http.StatusUnprocessableEntity)
+		default:
+			fmt.Println(err)
+			http.Error(rw, "unknown error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
 }
 
 func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {

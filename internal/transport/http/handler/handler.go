@@ -16,7 +16,7 @@ type Service struct {
 
 func New(serv Service) *Handler {
 	return &Handler{
-		UserHandler:           NewUserHandler(serv.UserService, serv.OrderService),
+		UserHandler:           NewUserHandler(serv.UserService, serv.OrderService, serv.BalanceHistoryService),
 		BalanceHistoryHandler: NewBalanceHistoryHandler(),
 		StatusHandler:         NewStatusHandler(serv.StatusService),
 		OrderHandler:          NewOrderHandler(),
