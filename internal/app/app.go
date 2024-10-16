@@ -1,8 +1,12 @@
 package app
 
 import (
+	"context"
+	"flag"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/Zrossiz/gophermart/internal/api"
 	"github.com/Zrossiz/gophermart/internal/config"
@@ -11,11 +15,15 @@ import (
 	"github.com/Zrossiz/gophermart/internal/transport/http/handler"
 	"github.com/Zrossiz/gophermart/internal/transport/http/router"
 	"github.com/Zrossiz/gophermart/pkg/logger"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 )
 
 func Start() {
+	migrate()
+
 	cfg, err := config.Init()
 	if err != nil {
 		fmt.Println(err)
@@ -69,4 +77,72 @@ func Start() {
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal("Failed to start server", zap.Error(err))
 	}
+}
+
+// TODO: delete auto migrate after complete project
+func migrate() {
+	_ = godotenv.Load()
+	DBDSN := os.Getenv("DATABASE_URI")
+	fmt.Printf("start migrate: %s\n", DBDSN)
+	db, err := pgxpool.Connect(context.Background(), DBDSN)
+	if err != nil {
+		fmt.Printf("error connecting to db: %v\n", err)
+		return
+	}
+	defer db.Close()
+
+	var filenameFlag string
+	flag.StringVar(&filenameFlag, "f", "", "filename for migrated file")
+	flag.Parse()
+
+	if filenameFlag == "" {
+		err = migrateAll(db)
+		if err != nil {
+			fmt.Printf("error migrate all files: %v\n", err)
+		}
+	} else {
+		err = migrateOne(db, filenameFlag)
+		if err != nil {
+			fmt.Printf("error migrate file: %v\n", err)
+		}
+	}
+
+	fmt.Println("Schema created successfully!")
+}
+
+func migrateAll(db *pgxpool.Pool) error {
+	files, err := os.ReadDir("migration")
+	if err != nil {
+		return err
+	}
+
+	for _, f := range files {
+		sqlFilePath := filepath.Join("migration", f.Name())
+		schemaSQL, err := os.ReadFile(sqlFilePath)
+		if err != nil {
+			return err
+		}
+
+		_, err = db.Exec(context.Background(), string(schemaSQL))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func migrateOne(db *pgxpool.Pool, filename string) error {
+	sqlFilePath := filepath.Join("migration", filename)
+	schemaSQL, err := os.ReadFile(sqlFilePath)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(context.Background(), string(schemaSQL))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
