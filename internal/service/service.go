@@ -21,7 +21,7 @@ type Storage struct {
 	StatusStorage         StatusStorage
 }
 
-func New(db Storage, cfg *config.Config, log *zap.Logger) *Service {
+func New(db Storage, cfg *config.Config, log *zap.Logger, a ApiService) *Service {
 	return &Service{
 		UserService: NewUserService(
 			db.UserStorage,
@@ -33,6 +33,6 @@ func New(db Storage, cfg *config.Config, log *zap.Logger) *Service {
 		BalanceHistoryService: NewBalanceHistoryService(db.BalanceHistoryStorage),
 		RefreshTokenService:   NewRefreshTokenService(db.TokenStorage),
 		StatusService:         NewStatusService(db.StatusStorage),
-		OrderService:          NewOrderService(db.OrderStorage, log),
+		OrderService:          NewOrderService(db.OrderStorage, db.StatusStorage, a, log),
 	}
 }

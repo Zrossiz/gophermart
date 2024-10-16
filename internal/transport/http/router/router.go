@@ -18,7 +18,7 @@ func New(h *handler.Handler) http.Handler {
 	r := chi.NewRouter()
 
 	router := &Router{
-		Order:          *NewOrderRouter(),
+		Order:          *NewOrderRouter(h.OrderHandler),
 		User:           *NewUserRouter(h.UserHandler),
 		BalanceHistory: *NewBalanceHistoryRouter(),
 		Status:         *NewStatusRouter(h.StatusHandler),

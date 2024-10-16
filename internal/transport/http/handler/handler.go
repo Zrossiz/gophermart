@@ -19,6 +19,6 @@ func New(serv Service) *Handler {
 		UserHandler:           NewUserHandler(serv.UserService, serv.OrderService, serv.BalanceHistoryService),
 		BalanceHistoryHandler: NewBalanceHistoryHandler(),
 		StatusHandler:         NewStatusHandler(serv.StatusService),
-		OrderHandler:          NewOrderHandler(),
+		OrderHandler:          NewOrderHandler(serv.OrderService),
 	}
 }

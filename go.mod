@@ -1,6 +1,6 @@
 module github.com/Zrossiz/gophermart
 
-go 1.23.0
+go 1.22.0
 
 require (
 	github.com/jackc/pgx/v4 v4.18.3
@@ -8,7 +8,10 @@ require (
 	go.uber.org/zap v1.27.0
 )
 
-require github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+require (
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
+)
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0

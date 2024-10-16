@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Zrossiz/gophermart/internal/api"
 	"github.com/Zrossiz/gophermart/internal/config"
 	"github.com/Zrossiz/gophermart/internal/service"
 	"github.com/Zrossiz/gophermart/internal/storage/postgresql"
 	"github.com/Zrossiz/gophermart/internal/transport/http/handler"
 	"github.com/Zrossiz/gophermart/internal/transport/http/router"
 	"github.com/Zrossiz/gophermart/pkg/logger"
+	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 )
 
@@ -27,6 +29,8 @@ func Start() {
 	}
 	log := zapLogger.ZapLogger
 
+	a := api.New(cfg)
+
 	dbConn, err := postgresql.Connect(cfg.DBDSN)
 	if err != nil {
 		log.Sugar().Fatalf("error connect to db: %v", err)
@@ -39,7 +43,7 @@ func Start() {
 		OrderStorage:          &db.OrderStore,
 		TokenStorage:          &db.TokenStore,
 		StatusStorage:         &db.StatusStore,
-	}, cfg, log)
+	}, cfg, log, a)
 
 	h := handler.New(handler.Service{
 		UserService:           s.UserService,
@@ -48,6 +52,13 @@ func Start() {
 		StatusService:         s.StatusService,
 	})
 	r := router.New(h)
+
+	cr := cron.New()
+	cr.AddFunc("*/1 * * *", func() {
+		log.Info("starting cron...")
+		s.OrderService.UpdateOrders()
+		log.Info("cron ended")
+	})
 
 	srv := &http.Server{
 		Addr:    cfg.RunAddress,
