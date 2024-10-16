@@ -14,7 +14,7 @@ import (
 func main() {
 	_ = godotenv.Load()
 	DBDSN := os.Getenv("DATABASE_URI")
-	fmt.Println("start migrate: %s", DBDSN)
+	fmt.Printf("start migrate: %s\n", DBDSN)
 	db, err := pgxpool.Connect(context.Background(), DBDSN)
 	if err != nil {
 		fmt.Printf("error connecting to db: %v\n", err)
