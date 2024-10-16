@@ -2,6 +2,9 @@ package postgresql
 
 import (
 	"context"
+	"fmt"
+	"strings"
+	"time"
 
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/jackc/pgx/v4"
@@ -82,6 +85,22 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		loc, err := time.LoadLocation("Europe/Moscow")
+		if err != nil {
+			return nil, fmt.Errorf("ошибка загрузки временной зоны: %w", err)
+		}
+
+		order.CreatedAt = order.CreatedAt.In(loc)
+
+		order.UpdatedAt = order.UpdatedAt.In(loc)
+
+		if order.ProcessedAt != nil {
+			processedAt := order.ProcessedAt.In(loc)
+			order.ProcessedAt = &processedAt
+		}
+
+		order.Status = strings.ToUpper(order.Status)
 		orders = append(orders, order)
 	}
 

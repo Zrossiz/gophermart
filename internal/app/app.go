@@ -22,12 +22,14 @@ import (
 )
 
 func Start() {
-	migrate()
-
 	cfg, err := config.Init()
 	if err != nil {
 		fmt.Println(err)
 		zap.S().Fatalf("config init error: %v", err)
+	}
+
+	if len(cfg.AutoMigrate) == 0 {
+		migrate()
 	}
 
 	zapLogger, err := logger.New(cfg.LogLevel)

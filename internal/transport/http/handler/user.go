@@ -249,12 +249,18 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 		return
 	}
 
-	_, err := u.orderService.GetAllOrdersByUser(userID)
+	orders, err := u.orderService.GetAllOrdersByUser(userID)
 	if err != nil {
 		http.Error(rw, "failed to insert", http.StatusInternalServerError)
 	}
 
+	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
+
+	err = json.NewEncoder(rw).Encode(orders)
+	if err != nil {
+		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
+	}
 }
 
 func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {

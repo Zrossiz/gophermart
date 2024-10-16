@@ -17,6 +17,7 @@ type Config struct {
 	RefreshTokenSecret    string
 	LogLevel              string
 	Cost                  int
+	AutoMigrate           string
 }
 
 var AppConfig *Config
@@ -53,6 +54,7 @@ func Init() (*Config, error) {
 	flag.IntVar(&cfg.Cost, "s", 4, "cost for hash password")
 	flag.Parse()
 
+	cfg.AutoMigrate = getEnvOrDefault("AUTO_MIGRATE", "")
 	cfg.RunAddress = getEnvOrDefault("RUN_ADDRESS", cfg.RunAddress)
 	cfg.DBDSN = getEnvOrDefault("DATABASE_URI", cfg.DBDSN)
 	cfg.AcccrualSystemAddress = getEnvOrDefault("ACCRUAL_SYSTEM_ADDRESS", cfg.AcccrualSystemAddress)

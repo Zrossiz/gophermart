@@ -23,13 +23,13 @@ type Status struct {
 }
 
 type Order struct {
-	OrderID     int             `json:"order_ID" db:"order_ID"`
-	UserID      int             `json:"user_ID" db:"user_ID"`
-	Status      string          `json:"status,omitempty" db:"status"`
-	Accrual     decimal.Decimal `json:"accrual" db:"accrual"`
-	ProcessedAt *time.Time      `json:"processed_at,omitempty" db:"processed_at"`
-	CreatedAt   time.Time       `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at" db:"updated_at"`
+	OrderID     int        `json:"number" db:"order_ID"`
+	UserID      int        `json:"-" db:"user_ID"`
+	Status      string     `json:"status,omitempty" db:"status"`
+	Accrual     float64    `json:"accrual,omitempty" db:"accrual"`
+	ProcessedAt *time.Time `json:"processed_at,omitempty" db:"processed_at"`
+	CreatedAt   time.Time  `json:"created_at" db:"uploaded_at"`
+	UpdatedAt   time.Time  `json:"updated_at" db:"updated_at"`
 }
 
 type BalanceHistory struct {
