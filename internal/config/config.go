@@ -50,7 +50,7 @@ func Init() (*Config, error) {
 	flag.StringVar(&cfg.AccessTokenSecret, "as", "access_secret", "access token secret")
 	flag.StringVar(&cfg.RefreshTokenSecret, "rs", "refresh_secret", "refresh token secret")
 	flag.StringVar(&cfg.LogLevel, "l", "WARN", "log level")
-	flag.IntVar(&cfg.Cost, "s", 20, "cost for hash password")
+	flag.IntVar(&cfg.Cost, "s", 4, "cost for hash password")
 	flag.Parse()
 
 	cfg.RunAddress = getEnvOrDefault("RUN_ADDRESS", cfg.RunAddress)
