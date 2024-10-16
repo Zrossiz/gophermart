@@ -17,7 +17,7 @@ const (
 	UserNameContextKey contextKey = "userName"
 )
 
-func JWTMiddleware(next http.Handler) http.Handler {
+func JWTMIDdleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("accesstoken")
 		if err != nil {
@@ -44,8 +44,8 @@ func JWTMiddleware(next http.Handler) http.Handler {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			var userID int
 			var okID bool
-			if idVal, ok := claims["userId"]; ok {
-				switch v := idVal.(type) {
+			if IDVal, ok := claims["userID"]; ok {
+				switch v := IDVal.(type) {
 				case string:
 					userID, err = strconv.Atoi(v)
 					if err != nil {

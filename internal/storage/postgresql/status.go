@@ -28,7 +28,7 @@ func (s *StatusStore) Create(status string) (bool, error) {
 }
 
 func (s *StatusStore) GetAll() ([]model.Status, error) {
-	sql := `SELECT id, status, created_at, updated_at FROM statuses`
+	sql := `SELECT ID, status, created_at, updated_at FROM statuses`
 	rows, err := s.db.Query(context.Background(), sql)
 	if err != nil {
 		return nil, err

@@ -29,7 +29,7 @@ func (u *UserStore) Create(name string, password string) (bool, error) {
 }
 
 func (u *UserStore) GetUserByName(name string) (*model.User, error) {
-	sql := `SELECT id, name, password, account, created_at, updated_at FROM users WHERE name = $1`
+	sql := `SELECT ID, name, password, account, created_at, updated_at FROM users WHERE name = $1`
 	row := u.db.QueryRow(context.Background(), sql, name)
 	var user model.User
 	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Account, &user.CreatedAt, &user.UpdatedAt)
@@ -44,7 +44,7 @@ func (u *UserStore) GetUserByName(name string) (*model.User, error) {
 }
 
 func (u *UserStore) UpdateUserBalance(userID int64, balance decimal.Decimal) (bool, error) {
-	sql := `UPDATE users SET account = $1 WHERE id = $2`
+	sql := `UPDATE users SET account = $1 WHERE ID = $2`
 	cmdTag, err := u.db.Exec(context.Background(), sql, balance, userID)
 	if err != nil {
 		return false, err

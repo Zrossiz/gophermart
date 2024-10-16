@@ -118,7 +118,7 @@ func (u *UserService) Login(loginDTO dto.Registration) (string, string, error) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(curUser.Password), []byte(loginDTO.Password))
 	if err != nil {
-		return "", "", apperrors.ErrInvalidPassword
+		return "", "", apperrors.ErrInvalIDPassword
 	}
 
 	JWTAccessProps := utils.GenerateJWTProps{

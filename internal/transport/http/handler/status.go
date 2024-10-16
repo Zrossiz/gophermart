@@ -24,7 +24,7 @@ func (o *StatusHandler) Create(rw http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&statusDTO)
 	if err != nil {
-		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		http.Error(rw, "invalID request body", http.StatusBadRequest)
 		return
 	}
 

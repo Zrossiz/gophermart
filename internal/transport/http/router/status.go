@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/Zrossiz/gophermart/internal/middleware"
+	"github.com/Zrossiz/gophermart/internal/mIDdleware"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -23,6 +23,6 @@ func NewStatusRouter(handler StatusHandler) *StatusRouter {
 
 func (s *StatusRouter) RegisterRoutes(r chi.Router, h StatusHandler) {
 	r.Route("/api/statuses", func(r chi.Router) {
-		r.With(middleware.JWTMiddleware).Post("/", s.handler.Create)
+		r.With(mIDdleware.JWTMIDdleware).Post("/", s.handler.Create)
 	})
 }

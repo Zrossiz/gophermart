@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"github.com/Zrossiz/gophermart/internal/middleware"
+	"github.com/Zrossiz/gophermart/internal/mIDdleware"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -28,9 +28,9 @@ func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
 	r.Route("/api/user", func(r chi.Router) {
 		r.Post(("/register"), u.handler.Registration)
 		r.Post("/login", u.handler.Login)
-		r.With(middleware.JWTMiddleware).Post("/orders", u.handler.UploadOrder)
-		r.With(middleware.JWTMiddleware).Get("/orders", u.handler.GetAllOrdersByUser)
-		r.With(middleware.JWTMiddleware).Get("/balance", u.handler.GetUserBalance)
-		r.With(middleware.JWTMiddleware).Post("/balance/withdraw", u.handler.Withdraw)
+		r.With(mIDdleware.JWTMIDdleware).Post("/orders", u.handler.UploadOrder)
+		r.With(mIDdleware.JWTMIDdleware).Get("/orders", u.handler.GetAllOrdersByUser)
+		r.With(mIDdleware.JWTMIDdleware).Get("/balance", u.handler.GetUserBalance)
+		r.With(mIDdleware.JWTMIDdleware).Post("/balance/withdraw", u.handler.Withdraw)
 	})
 }

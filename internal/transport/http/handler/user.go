@@ -10,7 +10,7 @@ import (
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
-	"github.com/Zrossiz/gophermart/internal/middleware"
+	"github.com/Zrossiz/gophermart/internal/mIDdleware"
 )
 
 type UserHandler struct {
@@ -41,7 +41,7 @@ func (u *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&registrationDTO)
 	if err != nil {
-		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		http.Error(rw, "invalID request body", http.StatusBadRequest)
 		return
 	}
 
@@ -104,7 +104,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&loginDTO)
 	if err != nil {
-		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		http.Error(rw, "invalID request body", http.StatusBadRequest)
 		return
 	}
 
@@ -121,7 +121,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 	accessToken, refreshToken, err := u.userService.Login(loginDTO)
 	if err != nil {
 		switch err {
-		case apperrors.ErrInvalidPassword:
+		case apperrors.ErrInvalIDPassword:
 			http.Error(rw, "unauthorized", http.StatusUnauthorized)
 		case apperrors.ErrUserAlreadyExists:
 			http.Error(rw, "user not found", http.StatusBadRequest)
@@ -170,7 +170,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
+	userID, ok := r.Context().Value(mIDdleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
@@ -180,7 +180,7 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&withdrawDTO)
 	if err != nil {
-		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		http.Error(rw, "invalID request body", http.StatusBadRequest)
 		return
 	}
 
@@ -189,8 +189,8 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		switch err {
 		case apperrors.ErrNotEnoughMoney:
 			http.Error(rw, "not enough money on account", http.StatusPaymentRequired)
-		case apperrors.ErrInvalidOrderId:
-			http.Error(rw, "invalid order id", http.StatusUnprocessableEntity)
+		case apperrors.ErrInvalIDOrderID:
+			http.Error(rw, "invalID order ID", http.StatusUnprocessableEntity)
 		default:
 			fmt.Println(err)
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
@@ -202,7 +202,7 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
+	userID, ok := r.Context().Value(mIDdleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
@@ -217,7 +217,7 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 
 	orderID, err := strconv.Atoi(string(body))
 	if err != nil {
-		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		http.Error(rw, "invalID request body", http.StatusBadRequest)
 		return
 	}
 
@@ -230,8 +230,8 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "order already uploaded by another user", http.StatusConflict)
 		case apperrors.ErrDBQuery:
 			http.Error(rw, "internal server error", http.StatusInternalServerError)
-		case apperrors.ErrInvalidOrderId:
-			http.Error(rw, "invalid order id", http.StatusUnprocessableEntity)
+		case apperrors.ErrInvalIDOrderID:
+			http.Error(rw, "invalID order ID", http.StatusUnprocessableEntity)
 		default:
 			fmt.Println(err)
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
@@ -243,7 +243,7 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
+	userID, ok := r.Context().Value(mIDdleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
@@ -258,7 +258,7 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 }
 
 func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
-	username, ok := r.Context().Value(middleware.UserNameContextKey).(string)
+	username, ok := r.Context().Value(mIDdleware.UserNameContextKey).(string)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return

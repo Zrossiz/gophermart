@@ -5,12 +5,12 @@ import (
 	"unicode"
 )
 
-func IsLuhn(orderId string) bool {
+func IsLuhn(orderID string) bool {
 	var sum int
 	var alternate bool
 
-	for i := len(orderId) - 1; i >= 0; i-- {
-		r := rune(orderId[i])
+	for i := len(orderID) - 1; i >= 0; i-- {
+		r := rune(orderID[i])
 
 		if !unicode.IsDigit(r) {
 			return false

@@ -4,7 +4,7 @@ type BalanceHistoryHandler struct {
 }
 
 type BalanceHistoryService interface {
-	Withdraw(userId, orderId, sum int) error
+	Withdraw(userID, orderID, sum int) error
 }
 
 func NewBalanceHistoryHandler() *BalanceHistoryHandler {

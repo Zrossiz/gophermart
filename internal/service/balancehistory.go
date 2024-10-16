@@ -12,7 +12,7 @@ type BalanceHistoryService struct {
 type BalanceHistoryStorage interface {
 	Create(balanceHistoryDTO dto.CreateBalanceHistory) (bool, error)
 	GetAllDebits(userID int64) ([]model.BalanceHistory, error)
-	Withdraw(userId, orderId, sum int) error
+	Withdraw(userID, orderID, sum int) error
 }
 
 func NewBalanceHistoryService(balanceHistoryStorage BalanceHistoryStorage) *BalanceHistoryService {
@@ -21,8 +21,8 @@ func NewBalanceHistoryService(balanceHistoryStorage BalanceHistoryStorage) *Bala
 	}
 }
 
-func (b *BalanceHistoryService) Withdraw(userId, orderId, sum int) error {
-	err := b.db.Withdraw(userId, orderId, sum)
+func (b *BalanceHistoryService) Withdraw(userID, orderID, sum int) error {
+	err := b.db.Withdraw(userID, orderID, sum)
 	if err != nil {
 		return err
 	}

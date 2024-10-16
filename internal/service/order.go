@@ -18,16 +18,16 @@ type OrderService struct {
 }
 
 type OrderStorage interface {
-	CreateOrder(orderId int, userId int) (bool, error)
+	CreateOrder(orderID int, userID int) (bool, error)
 	GetAllOrdersByUser(userID int64) ([]model.Order, error)
 	UpdateSumAndStatusOrder(orderID int64, status string, sum float64) (bool, error)
-	GetOrderById(orderId int) (*model.Order, error)
+	GetOrderByID(orderID int) (*model.Order, error)
 	GetAllWithdrawnByUser(userID int64) (float64, error)
 	GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]model.Order, error)
 }
 
 type ApiService interface {
-	UpdateOrder(orderId int) (string, float64, error)
+	UpdateOrder(orderID int) (string, float64, error)
 }
 
 func NewOrderService(db OrderStorage, statusDB StatusStorage, a ApiService, log *zap.Logger) *OrderService {
@@ -39,14 +39,14 @@ func NewOrderService(db OrderStorage, statusDB StatusStorage, a ApiService, log 
 	}
 }
 
-func (o *OrderService) UploadOrder(order int, userId int) error {
-	existOrder, err := o.orderDB.GetOrderById(order)
+func (o *OrderService) UploadOrder(order int, userID int) error {
+	existOrder, err := o.orderDB.GetOrderByID(order)
 	if err != nil {
 		o.log.Error(err.Error())
 		return apperrors.ErrDBQuery
 	}
 
-	if existOrder != nil && existOrder.UserID != userId {
+	if existOrder != nil && existOrder.UserID != userID {
 		return apperrors.ErrOrderAlreadyUploadedByAnotherUser
 	}
 
@@ -56,10 +56,10 @@ func (o *OrderService) UploadOrder(order int, userId int) error {
 
 	luhn := utils.IsLuhn(strconv.Itoa(order))
 	if !luhn {
-		return apperrors.ErrInvalidOrderId
+		return apperrors.ErrInvalIDOrderID
 	}
 
-	_, err = o.orderDB.CreateOrder(order, userId)
+	_, err = o.orderDB.CreateOrder(order, userID)
 	if err != nil {
 		o.log.Error(err.Error())
 		return apperrors.ErrDBQuery
@@ -68,8 +68,8 @@ func (o *OrderService) UploadOrder(order int, userId int) error {
 	return nil
 }
 
-func (o *OrderService) GetAllOrdersByUser(userId int) ([]model.Order, error) {
-	orders, err := o.orderDB.GetAllOrdersByUser(int64(userId))
+func (o *OrderService) GetAllOrdersByUser(userID int) ([]model.Order, error) {
+	orders, err := o.orderDB.GetAllOrdersByUser(int64(userID))
 	if err != nil {
 		o.log.Error(err.Error())
 		return make([]model.Order, 0), apperrors.ErrDBQuery

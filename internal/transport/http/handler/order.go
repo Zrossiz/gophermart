@@ -11,8 +11,8 @@ type OrderHandler struct {
 }
 
 type OrderService interface {
-	UploadOrder(order int, userId int) error
-	GetAllOrdersByUser(userId int) ([]model.Order, error)
+	UploadOrder(order int, userID int) error
+	GetAllOrdersByUser(userID int) ([]model.Order, error)
 	UpdateOrders()
 }
 

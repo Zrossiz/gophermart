@@ -61,24 +61,24 @@ func Init() (*Config, error) {
 	cfg.LogLevel = getEnvOrDefault("LOG_LEVEL", cfg.LogLevel)
 	cost, err := getIntEnvOrDefault("COST", 4)
 	if err != nil {
-		return nil, errors.New("invalid cost value")
+		return nil, errors.New("invalID cost value")
 	}
 	cfg.Cost = cost
 
 	if cfg.AccessTokenSecret == "" {
-		return nil, errors.New("access token secret not provided")
+		return nil, errors.New("access token secret not provIDed")
 	}
 	if cfg.RefreshTokenSecret == "" {
-		return nil, errors.New("refresh token secret not provided")
+		return nil, errors.New("refresh token secret not provIDed")
 	}
 	if cfg.AcccrualSystemAddress == "" {
-		return nil, errors.New("accrual system address not provided")
+		return nil, errors.New("accrual system address not provIDed")
 	}
 	if cfg.DBDSN == "" {
-		return nil, errors.New("db uri not provided")
+		return nil, errors.New("db uri not provIDed")
 	}
 	if cfg.RunAddress == "" {
-		return nil, errors.New("run address not provided")
+		return nil, errors.New("run address not provIDed")
 	}
 
 	AppConfig = cfg
