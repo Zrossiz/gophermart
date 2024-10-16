@@ -14,7 +14,7 @@ type OrderService struct {
 	orderDB  OrderStorage
 	statusDB StatusStorage
 	log      *zap.Logger
-	api      ApiService
+	api      APIService
 }
 
 type OrderStorage interface {
@@ -26,11 +26,11 @@ type OrderStorage interface {
 	GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]model.Order, error)
 }
 
-type ApiService interface {
+type APIService interface {
 	UpdateOrder(orderID int) (string, float64, error)
 }
 
-func NewOrderService(db OrderStorage, statusDB StatusStorage, a ApiService, log *zap.Logger) *OrderService {
+func NewOrderService(db OrderStorage, statusDB StatusStorage, a APIService, log *zap.Logger) *OrderService {
 	return &OrderService{
 		orderDB:  db,
 		log:      log,

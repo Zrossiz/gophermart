@@ -21,7 +21,7 @@ type Storage struct {
 	StatusStorage         StatusStorage
 }
 
-func New(db Storage, cfg *config.Config, log *zap.Logger, a ApiService) *Service {
+func New(db Storage, cfg *config.Config, log *zap.Logger, a APIService) *Service {
 	return &Service{
 		UserService: NewUserService(
 			db.UserStorage,

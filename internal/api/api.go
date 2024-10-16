@@ -8,7 +8,7 @@ import (
 	"github.com/Zrossiz/gophermart/internal/config"
 )
 
-type ApiService struct {
+type APIService struct {
 	cfg *config.Config
 }
 
@@ -18,11 +18,11 @@ type OrderResponse struct {
 	Accrual float64 `json:"accrual,omitempty"`
 }
 
-func New(cfg *config.Config) *ApiService {
-	return &ApiService{cfg: cfg}
+func New(cfg *config.Config) *APIService {
+	return &APIService{cfg: cfg}
 }
 
-func (a *ApiService) UpdateOrder(orderID int) (string, float64, error) {
+func (a *APIService) UpdateOrder(orderID int) (string, float64, error) {
 	url := fmt.Sprintf("%s/api/orders/%d", a.cfg.AcccrualSystemAddress, orderID)
 
 	resp, err := http.Get(url)
