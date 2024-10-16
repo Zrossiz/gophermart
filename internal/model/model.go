@@ -27,7 +27,7 @@ type Order struct {
 	UserID      int             `json:"user_ID" db:"user_ID"`
 	Status      string          `json:"status,omitempty" db:"status"`
 	Accrual     decimal.Decimal `json:"accrual" db:"accrual"`
-	ProcessedAt time.Time       `json:"processed_at" db:"processed_at"`
+	ProcessedAt *time.Time      `json:"processed_at,omitempty" db:"processed_at"`
 	CreatedAt   time.Time       `json:"created_at" db:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at" db:"updated_at"`
 }
