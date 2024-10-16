@@ -1,10 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
+	"github.com/Zrossiz/gophermart/internal/dto"
 	"github.com/Zrossiz/gophermart/internal/model"
 	"github.com/Zrossiz/gophermart/internal/utils"
 	"go.uber.org/zap"
@@ -68,18 +70,29 @@ func (o *OrderService) UploadOrder(order int, userID int) error {
 	return nil
 }
 
-func (o *OrderService) GetAllOrdersByUser(userID int) ([]model.Order, error) {
+func (o *OrderService) GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, error) {
 	orders, err := o.orderDB.GetAllOrdersByUser(int64(userID))
 	if err != nil {
 		o.log.Error(err.Error())
-		return make([]model.Order, 0), apperrors.ErrDBQuery
+		return make([]dto.ResponseOrder, 0), apperrors.ErrDBQuery
 	}
 
 	if len(orders) == 0 {
-		return make([]model.Order, 0), apperrors.ErrOrdersNotFound
+		return make([]dto.ResponseOrder, 0), apperrors.ErrOrdersNotFound
 	}
 
-	return orders, nil
+	var responseOrders []dto.ResponseOrder
+
+	for _, order := range orders {
+		responseOrders = append(responseOrders, dto.ResponseOrder{
+			OrderID:   fmt.Sprint(order.OrderID),
+			Status:    strings.ToUpper(order.Status),
+			Accrual:   order.Accrual,
+			CreatedAt: order.CreatedAt,
+		})
+	}
+
+	return responseOrders, nil
 }
 
 func (o *OrderService) UpdateOrders() {

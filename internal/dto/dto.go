@@ -1,6 +1,10 @@
 package dto
 
-import "github.com/shopspring/decimal"
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
 
 type CreateBalanceHistory struct {
 	OrderID int64           `json:"order_ID"`
@@ -25,4 +29,12 @@ type BalanceUser struct {
 type Withdraw struct {
 	Sum   float64 `json:"sum"`
 	Order float64 `json:"order"`
+}
+
+type ResponseOrder struct {
+	OrderID     string     `json:"number"`
+	Accrual     float64    `json:"accrual,omitempty"`
+	Status      string     `json:"status,omitempty"`
+	ProcessedAt *time.Time `json:"processed_at,omitempty"`
+	CreatedAt   time.Time  `json:"uploaded_at"`
 }

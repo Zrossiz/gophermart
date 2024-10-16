@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/Zrossiz/gophermart/internal/model"
+	"github.com/Zrossiz/gophermart/internal/dto"
 )
 
 type OrderHandler struct {
@@ -12,7 +12,7 @@ type OrderHandler struct {
 
 type OrderService interface {
 	UploadOrder(order int, userID int) error
-	GetAllOrdersByUser(userID int) ([]model.Order, error)
+	GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, error)
 	UpdateOrders()
 }
 
