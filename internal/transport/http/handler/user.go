@@ -10,7 +10,7 @@ import (
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
-	"github.com/Zrossiz/gophermart/internal/mIDdleware"
+	"github.com/Zrossiz/gophermart/internal/middleware"
 )
 
 type UserHandler struct {
@@ -170,7 +170,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(mIDdleware.UserIDContextKey).(int)
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
@@ -202,7 +202,7 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(mIDdleware.UserIDContextKey).(int)
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
@@ -243,7 +243,7 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(mIDdleware.UserIDContextKey).(int)
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
@@ -258,7 +258,7 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 }
 
 func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
-	username, ok := r.Context().Value(mIDdleware.UserNameContextKey).(string)
+	username, ok := r.Context().Value(middleware.UserNameContextKey).(string)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
