@@ -104,7 +104,6 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 		orders = append(orders, order)
 	}
 
-	o.log.Info("orders ready")
 	if len(orders) == 0 {
 		return nil, nil
 	}

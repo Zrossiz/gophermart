@@ -185,7 +185,13 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = u.balanceHistoryService.Withdraw(userID, int(withdrawDTO.Order), withdrawDTO.Sum)
+	intOrderId, err := strconv.Atoi(withdrawDTO.Order)
+	if err != nil {
+		http.Error(rw, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = u.balanceHistoryService.Withdraw(userID, intOrderId, withdrawDTO.Sum)
 	if err != nil {
 		switch err {
 		case apperrors.ErrNotEnoughMoney:
