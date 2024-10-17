@@ -251,7 +251,13 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 
 	orders, err := u.orderService.GetAllOrdersByUser(userID)
 	if err != nil {
-		http.Error(rw, "failed to insert", http.StatusInternalServerError)
+		switch err {
+		case apperrors.ErrOrdersNotFound:
+			http.Error(rw, "orders not found", http.StatusOK)
+		default:
+			http.Error(rw, "failed to get orders", http.StatusInternalServerError)
+		}
+		return
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
