@@ -77,6 +77,12 @@ func (o *OrderService) GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, erro
 		return make([]dto.ResponseOrder, 0), apperrors.ErrDBQuery
 	}
 
+	o.log.Info("orders: ")
+	fmt.Print(orders)
+	o.log.Info("err: ")
+	fmt.Print(err)
+	fmt.Println("------")
+
 	if orders == nil {
 		return nil, apperrors.ErrOrdersNotFound
 	}
