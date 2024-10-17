@@ -73,7 +73,7 @@ func (o *OrderService) UploadOrder(order int, userID int) error {
 func (o *OrderService) GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, error) {
 	orders, err := o.orderDB.GetAllOrdersByUser(int64(userID))
 	if err != nil {
-		o.log.Error(err.Error())
+		o.log.Error("db query error", zap.Error(err))
 		return make([]dto.ResponseOrder, 0), apperrors.ErrDBQuery
 	}
 

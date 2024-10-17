@@ -60,7 +60,7 @@ func Init() (*Config, error) {
 	cfg.AcccrualSystemAddress = getEnvOrDefault("ACCRUAL_SYSTEM_ADDRESS", cfg.AcccrualSystemAddress)
 	cfg.AccessTokenSecret = getEnvOrDefault("ACCESS_TOKEN_SECRET", cfg.AccessTokenSecret)
 	cfg.RefreshTokenSecret = getEnvOrDefault("REFRESH_TOKEN_SECRET", cfg.RefreshTokenSecret)
-	cfg.LogLevel = getEnvOrDefault("LOG_LEVEL", cfg.LogLevel)
+	cfg.LogLevel = getEnvOrDefault("LOG_LEVEL", "INFO")
 	cost, err := getIntEnvOrDefault("COST", 4)
 	if err != nil {
 		return nil, errors.New("invalID cost value")
