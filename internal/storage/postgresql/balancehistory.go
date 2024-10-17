@@ -20,7 +20,7 @@ func NewBalanceHistoryStore(db *pgxpool.Pool, log *zap.Logger) BalanceHistorySto
 }
 
 func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory) (bool, error) {
-	sql := `INSERT INTO balance_history (order_ID, user_ID, change) VALUES ($1, $2, $3)`
+	sql := `INSERT INTO balance_history (order_id, user_id, change) VALUES ($1, $2, $3)`
 	_, err := b.db.Exec(context.Background(), sql, balanceHistoryDTO.OrderID, balanceHistoryDTO.UserID, balanceHistoryDTO.Change)
 	if err != nil {
 		return false, err
@@ -55,7 +55,7 @@ func (b *BalanceHistoryStore) GetAllDebits(userID int64) ([]model.BalanceHistory
 	return histories, nil
 }
 
-func (b *BalanceHistoryStore) Withdraw(userID, orderID, sum int) error {
+func (b *BalanceHistoryStore) Withdraw(userID, orderID int, sum float64) error {
 	tx, err := b.db.Begin(context.Background())
 	if err != nil {
 		b.log.Error("failed to start transaction")
@@ -63,24 +63,35 @@ func (b *BalanceHistoryStore) Withdraw(userID, orderID, sum int) error {
 	}
 	defer tx.Rollback(context.Background())
 
-	var currentBalance int
+	var currentBalance float64
 	checkBalanceSQL := `SELECT account FROM users WHERE ID = $1`
 	err = tx.QueryRow(context.Background(), checkBalanceSQL, userID).Scan(&currentBalance)
 	if err != nil {
-		b.log.Error("failed to check baalnce", zap.Error(err))
+		b.log.Error("failed to check balance", zap.Error(err))
 		return err
 	}
 
-	resIDualAmount := currentBalance - sum
+	resAmount := currentBalance - sum
 
-	if resIDualAmount < 0 {
+	if resAmount < 0 {
 		return apperrors.ErrNotEnoughMoney
 	}
 
-	updateBalanceSQL := `UPDATE users SET balance = $1 WHERE ID = $2`
-	_, err = tx.Exec(context.Background(), updateBalanceSQL, sum, userID)
+	updateBalanceSQL := `UPDATE users SET account = $1 WHERE id = $2`
+	_, err = tx.Exec(context.Background(), updateBalanceSQL, resAmount, userID)
 	if err != nil {
 		b.log.Error("failed to insert balance history", zap.Error(err))
+		return err
+	}
+
+	_, err = b.Create(dto.CreateBalanceHistory{
+		OrderID: int64(orderID),
+		UserID:  int64(userID),
+		Change:  sum,
+	})
+
+	if err != nil {
+		b.log.Error("failed to create balance history", zap.Error(err))
 		return err
 	}
 

@@ -31,8 +31,9 @@ func NewUserHandler(
 	balanceHistoryService BalanceHistoryService,
 ) *UserHandler {
 	return &UserHandler{
-		userService:  userService,
-		orderService: orderSerice,
+		userService:           userService,
+		orderService:          orderSerice,
+		balanceHistoryService: balanceHistoryService,
 	}
 }
 
@@ -180,11 +181,11 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&withdrawDTO)
 	if err != nil {
-		http.Error(rw, "invalID request body", http.StatusBadRequest)
+		http.Error(rw, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	err = u.balanceHistoryService.Withdraw(userID, int(withdrawDTO.Order), int(withdrawDTO.Sum))
+	err = u.balanceHistoryService.Withdraw(userID, int(withdrawDTO.Order), withdrawDTO.Sum)
 	if err != nil {
 		switch err {
 		case apperrors.ErrNotEnoughMoney:

@@ -2,14 +2,12 @@ package dto
 
 import (
 	"time"
-
-	"github.com/shopspring/decimal"
 )
 
 type CreateBalanceHistory struct {
-	OrderID int64           `json:"order_ID"`
-	UserID  int64           `json:"user_ID"`
-	Change  decimal.Decimal `json:"change"`
+	OrderID int64   `json:"order_ID"`
+	UserID  int64   `json:"user_ID"`
+	Change  float64 `json:"change"`
 }
 
 type Registration struct {

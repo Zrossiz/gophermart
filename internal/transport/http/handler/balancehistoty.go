@@ -1,12 +1,13 @@
 package handler
 
 type BalanceHistoryHandler struct {
+	service BalanceHistoryService
 }
 
 type BalanceHistoryService interface {
-	Withdraw(userID, orderID, sum int) error
+	Withdraw(userID, orderID int, sum float64) error
 }
 
-func NewBalanceHistoryHandler() *BalanceHistoryHandler {
-	return &BalanceHistoryHandler{}
+func NewBalanceHistoryHandler(serv BalanceHistoryService) *BalanceHistoryHandler {
+	return &BalanceHistoryHandler{service: serv}
 }
