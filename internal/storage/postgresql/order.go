@@ -78,8 +78,6 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 	}
 	defer rows.Close()
 
-	o.log.Info("data geted")
-
 	var orders []model.Order
 	for rows.Next() {
 		var order model.Order
@@ -104,6 +102,11 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 
 		order.Status = strings.ToUpper(order.Status)
 		orders = append(orders, order)
+	}
+
+	o.log.Info("orders ready")
+	if len(orders) == 0 {
+		return nil, nil
 	}
 
 	if err = rows.Err(); err != nil {
