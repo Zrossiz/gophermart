@@ -243,9 +243,6 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request) {
-	rw.WriteHeader(http.StatusOK)
-	rw.Header().Set("Content-Type", "application/json")
-
 	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)

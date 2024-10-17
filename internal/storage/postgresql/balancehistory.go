@@ -30,7 +30,7 @@ func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory)
 }
 
 func (b *BalanceHistoryStore) GetAllDebits(userID int64) ([]model.BalanceHistory, error) {
-	sql := `SELECT ID, order_ID, user_ID, change, created_ID, updated_ID FROM balance_history WHERE user_ID = $1`
+	sql := `SELECT id, order_id, user_id, change, created_at, updated_at FROM balance_history WHERE user_id = $1`
 	rows, err := b.db.Query(context.Background(), sql, userID)
 	if err != nil {
 		return nil, err

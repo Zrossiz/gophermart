@@ -122,7 +122,7 @@ func (o *OrderStore) GetAllWithdrawnByUser(userID int64) (float64, error) {
 	sql := `
 		SELECT SUM(change) as total_change
 		FROM balance_history
-		WHERE user_ID = $1
+		WHERE user_id = $1
 	`
 
 	err := o.db.QueryRow(context.Background(), sql, userID).Scan(&totalChange)
@@ -130,11 +130,11 @@ func (o *OrderStore) GetAllWithdrawnByUser(userID int64) (float64, error) {
 		return 0, nil
 	}
 
-	return 0, nil
+	return totalChange, nil
 }
 
 func (o *OrderStore) GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]model.Order, error) {
-	sql := `SELECT order_ID, user_ID, status_ID FROM orders WHERE status_ID = $1 OR status_ID = $2`
+	sql := `SELECT order_id, user_id, status_id FROM orders WHERE status_id = $1 OR status_id = $2`
 
 	rows, err := o.db.Query(context.Background(), sql, unhandledStatus1, unhandledStatus2)
 	if err != nil {

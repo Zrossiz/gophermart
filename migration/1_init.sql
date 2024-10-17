@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS orders (
 
 CREATE TABLE IF NOT EXISTS balance_history (
     id SERIAL PRIMARY KEY,
-    order_id INT NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
+    order_id BIGINT NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     change DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),

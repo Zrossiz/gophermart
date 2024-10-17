@@ -23,7 +23,7 @@ type CreateStatus struct {
 
 type BalanceUser struct {
 	Current   float64 `json:"current"`
-	Withdrawn float64 `json:"withrawn"`
+	Withdrawn float64 `json:"withdrawn"`
 }
 
 type Withdraw struct {
