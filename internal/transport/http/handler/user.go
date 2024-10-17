@@ -253,7 +253,9 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 	if err != nil {
 		switch err {
 		case apperrors.ErrOrdersNotFound:
-			http.Error(rw, "orders not found", http.StatusOK)
+			rw.Header().Set("Content-Type", "application/json")
+			rw.WriteHeader(http.StatusOK)
+			_, _ = rw.Write([]byte("[]"))
 		default:
 			http.Error(rw, "failed to get orders", http.StatusInternalServerError)
 		}
@@ -266,6 +268,7 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 	err = json.NewEncoder(rw).Encode(orders)
 	if err != nil {
 		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
+		return
 	}
 }
 
