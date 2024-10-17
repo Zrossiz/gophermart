@@ -255,10 +255,15 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 		case apperrors.ErrOrdersNotFound:
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
-			_, _ = rw.Write([]byte("[]"))
 		default:
 			http.Error(rw, "failed to get orders", http.StatusInternalServerError)
 		}
+		return
+	}
+
+	if orders == nil {
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
 		return
 	}
 
