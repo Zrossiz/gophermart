@@ -43,6 +43,8 @@ func (o *OrderStore) GetOrderByID(orderID int) (*model.Order, error) {
 		return nil, err
 	}
 
+	order.Accrual = utils.Round(order.Accrual, 5)
+
 	return &order, nil
 }
 
@@ -129,6 +131,9 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 		order.UpdatedAt = order.UpdatedAt.In(loc)
 
 		order.Status = strings.ToUpper(order.Status)
+
+		order.Accrual = utils.Round(order.Accrual, 5)
+
 		orders = append(orders, order)
 	}
 
@@ -156,6 +161,8 @@ func (o *OrderStore) GetAllWithdrawnByUser(userID int64) (float64, error) {
 	if err != nil {
 		return 0, nil
 	}
+
+	totalChange = utils.Round(totalChange, 5)
 
 	return totalChange, nil
 }
