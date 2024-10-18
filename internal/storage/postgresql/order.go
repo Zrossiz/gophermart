@@ -31,10 +31,10 @@ func (o *OrderStore) CreateOrder(orderID int, userID int) (bool, error) {
 }
 
 func (o *OrderStore) GetOrderByID(orderID int) (*model.Order, error) {
-	sql := `SELECT order_ID, user_ID, accrual, processed_at, created_at, updated_at FROM orders WHERE order_ID = $1`
+	sql := `SELECT order_ID, user_ID, accrual, created_at, updated_at FROM orders WHERE order_ID = $1`
 	row := o.db.QueryRow(context.Background(), sql, orderID)
 	var order model.Order
-	err := row.Scan(&order.OrderID, &order.UserID, &order.Accrual, &order.ProcessedAt, &order.CreatedAt, &order.UpdatedAt)
+	err := row.Scan(&order.OrderID, &order.UserID, &order.Accrual, &order.CreatedAt, &order.UpdatedAt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil
@@ -72,18 +72,17 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 		LEFT JOIN statuses s ON o.status_ID = s.ID
 		WHERE o.user_ID = $1
 	`
-	fmt.Println("start db query")
+
 	rows, err := o.db.Query(context.Background(), sql, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	fmt.Println("end db query")
 
 	var orders []model.Order
 	for rows.Next() {
 		var order model.Order
-		err := rows.Scan(&order.OrderID, &order.UserID, &order.Status, &order.Accrual, &order.ProcessedAt, &order.CreatedAt, &order.UpdatedAt)
+		err := rows.Scan(&order.OrderID, &order.UserID, &order.Status, &order.Accrual, &order.CreatedAt, &order.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -97,11 +96,6 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 
 		order.UpdatedAt = order.UpdatedAt.In(loc)
 
-		if order.ProcessedAt != nil {
-			processedAt := order.ProcessedAt.In(loc)
-			order.ProcessedAt = &processedAt
-		}
-
 		order.Status = strings.ToUpper(order.Status)
 		orders = append(orders, order)
 	}
@@ -113,8 +107,6 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-
-	fmt.Println("end db layer")
 
 	return orders, nil
 }

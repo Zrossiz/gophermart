@@ -15,4 +15,5 @@ var (
 	ErrOrderAlreadyUploadedByAnotherUser = errors.New("order already uploaded by another user")
 	ErrOrdersNotFound                    = errors.New("orders not found")
 	ErrNotEnoughMoney                    = errors.New("not enough money")
+	ErrWithdrawlsNotFound                = errors.New("withdrawsls not found")
 )

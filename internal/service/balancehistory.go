@@ -29,3 +29,12 @@ func (b *BalanceHistoryService) Withdraw(userID, orderID int, sum float64) error
 
 	return nil
 }
+
+func (b *BalanceHistoryService) GetAllWithdrawlsByUser(userID int) ([]model.BalanceHistory, error) {
+	withdrawls, err := b.db.GetAllDebits(int64(userID))
+	if err != nil {
+		return nil, err
+	}
+
+	return withdrawls, nil
+}

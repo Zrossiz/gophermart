@@ -256,8 +256,6 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 		return
 	}
 
-	fmt.Println("start handler")
-
 	orders, err := u.orderService.GetAllOrdersByUser(userID)
 	if err != nil {
 		switch err {
@@ -301,6 +299,34 @@ func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 
 	err = json.NewEncoder(rw).Encode(response)
+	if err != nil {
+		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
+	}
+}
+
+func (u *UserHandler) Withdrawls(rw http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
+	if !ok {
+		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
+		return
+	}
+
+	withdrwals, err := u.balanceHistoryService.GetAllWithdrawlsByUser(userID)
+	if err != nil {
+		switch err {
+		case apperrors.ErrWithdrawlsNotFound:
+			rw.Header().Set("Content-Type", "application/json")
+			rw.WriteHeader(http.StatusOK)
+		default:
+			http.Error(rw, "failed to get withdrawls", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)
+
+	err = json.NewEncoder(rw).Encode(withdrwals)
 	if err != nil {
 		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
 	}

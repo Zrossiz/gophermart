@@ -71,13 +71,12 @@ func (o *OrderService) UploadOrder(order int, userID int) error {
 }
 
 func (o *OrderService) GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, error) {
-	fmt.Println("start handler")
+
 	orders, err := o.orderDB.GetAllOrdersByUser(int64(userID))
 	if err != nil {
 		o.log.Error("db query error", zap.Error(err))
 		return make([]dto.ResponseOrder, 0), apperrors.ErrDBQuery
 	}
-	fmt.Println("end get all orders")
 
 	if orders == nil {
 		return nil, apperrors.ErrOrdersNotFound
@@ -86,7 +85,7 @@ func (o *OrderService) GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, erro
 	if len(orders) == 0 {
 		return nil, apperrors.ErrOrdersNotFound
 	}
-	fmt.Println("start generate response")
+
 	var responseOrders []dto.ResponseOrder
 
 	for _, order := range orders {
@@ -97,7 +96,7 @@ func (o *OrderService) GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, erro
 			CreatedAt: order.CreatedAt,
 		})
 	}
-	fmt.Println("end generate response")
+
 	return responseOrders, nil
 }
 

@@ -1,11 +1,14 @@
 package handler
 
+import "github.com/Zrossiz/gophermart/internal/model"
+
 type BalanceHistoryHandler struct {
 	service BalanceHistoryService
 }
 
 type BalanceHistoryService interface {
 	Withdraw(userID, orderID int, sum float64) error
+	GetAllWithdrawlsByUser(userID int) ([]model.BalanceHistory, error)
 }
 
 func NewBalanceHistoryHandler(serv BalanceHistoryService) *BalanceHistoryHandler {

@@ -30,9 +30,8 @@ type Withdraw struct {
 }
 
 type ResponseOrder struct {
-	OrderID     string     `json:"number"`
-	Accrual     float64    `json:"accrual,omitempty"`
-	Status      string     `json:"status,omitempty"`
-	ProcessedAt *time.Time `json:"processed_at,omitempty"`
-	CreatedAt   time.Time  `json:"uploaded_at"`
+	OrderID   string    `json:"number"`
+	Accrual   float64   `json:"accrual,omitempty"`
+	Status    string    `json:"status,omitempty"`
+	CreatedAt time.Time `json:"uploaded_at"`
 }

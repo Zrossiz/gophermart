@@ -2,6 +2,8 @@ package postgresql
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
@@ -20,8 +22,15 @@ func NewBalanceHistoryStore(db *pgxpool.Pool, log *zap.Logger) BalanceHistorySto
 }
 
 func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory) (bool, error) {
-	sql := `INSERT INTO balance_history (order_id, user_id, change) VALUES ($1, $2, $3)`
-	_, err := b.db.Exec(context.Background(), sql, balanceHistoryDTO.OrderID, balanceHistoryDTO.UserID, balanceHistoryDTO.Change)
+	sql := `INSERT INTO balance_history (order_id, user_id, change, processed_at) VALUES ($1, $2, $3, $4)`
+	_, err := b.db.Exec(
+		context.Background(),
+		sql,
+		balanceHistoryDTO.OrderID,
+		balanceHistoryDTO.UserID,
+		balanceHistoryDTO.Change,
+		time.Now(),
+	)
 	if err != nil {
 		return false, err
 	}
@@ -30,7 +39,7 @@ func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory)
 }
 
 func (b *BalanceHistoryStore) GetAllDebits(userID int64) ([]model.BalanceHistory, error) {
-	sql := `SELECT id, order_id, user_id, change, created_at, updated_at FROM balance_history WHERE user_id = $1`
+	sql := `SELECT id, order_id, user_id, change, processed_at, created_at, updated_at FROM balance_history WHERE user_id = $1`
 	rows, err := b.db.Query(context.Background(), sql, userID)
 	if err != nil {
 		return nil, err
@@ -41,15 +50,30 @@ func (b *BalanceHistoryStore) GetAllDebits(userID int64) ([]model.BalanceHistory
 	for rows.Next() {
 		var history model.BalanceHistory
 
-		err := rows.Scan(&history.ID, &history.OrderID, &history.UserID, &history.Change, &history.CreatedAt, &history.UpdatedAt)
+		err := rows.Scan(&history.ID, &history.OrderID, &history.UserID, &history.Change, &history.ProcessedAt, &history.CreatedAt, &history.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
+
+		loc, err := time.LoadLocation("Europe/Moscow")
+		if err != nil {
+			return nil, fmt.Errorf("ошибка загрузки временной зоны: %w", err)
+		}
+
+		if history.ProcessedAt != nil {
+			processedAt := history.ProcessedAt.In(loc)
+			history.ProcessedAt = &processedAt
+		}
+
 		histories = append(histories, history)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
+	}
+
+	if len(histories) == 0 {
+		return nil, apperrors.ErrWithdrawlsNotFound
 	}
 
 	return histories, nil
