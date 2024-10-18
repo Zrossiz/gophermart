@@ -8,6 +8,7 @@ import (
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
 	"github.com/Zrossiz/gophermart/internal/model"
+	"github.com/Zrossiz/gophermart/internal/utils"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"go.uber.org/zap"
 )
@@ -28,7 +29,7 @@ func (b *BalanceHistoryStore) Create(balanceHistoryDTO dto.CreateBalanceHistory)
 		sql,
 		balanceHistoryDTO.OrderID,
 		balanceHistoryDTO.UserID,
-		balanceHistoryDTO.Change,
+		utils.Round(balanceHistoryDTO.Change, 5),
 		time.Now(),
 	)
 	if err != nil {

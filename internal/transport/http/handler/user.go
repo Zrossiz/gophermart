@@ -232,7 +232,8 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case apperrors.ErrOrderAlreadyUploaded:
-			http.Error(rw, "order already exist", http.StatusOK)
+			rw.Header().Set("Content-Type", "application/json")
+			rw.WriteHeader(http.StatusOK)
 		case apperrors.ErrOrderAlreadyUploadedByAnotherUser:
 			http.Error(rw, "order already uploaded by another user", http.StatusConflict)
 		case apperrors.ErrDBQuery:
@@ -262,6 +263,7 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 		case apperrors.ErrOrdersNotFound:
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
+			rw.Write([]byte("[]"))
 		default:
 			http.Error(rw, "failed to get orders", http.StatusInternalServerError)
 		}

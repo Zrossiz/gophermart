@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Zrossiz/gophermart/internal/model"
+	"github.com/Zrossiz/gophermart/internal/utils"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"go.uber.org/zap"
@@ -55,7 +56,7 @@ func (o *OrderStore) UpdateSumAndStatusOrder(orderID int64, status string, sum f
 	}
 
 	sql = `UPDATE orders SET status_ID = $1, accrual = $2 updated_at = NOW() WHERE order_ID = $3`
-	cmdTag, err := o.db.Exec(context.Background(), sql, statusID, sum, orderID)
+	cmdTag, err := o.db.Exec(context.Background(), sql, statusID, utils.Round(sum, 5), orderID)
 	if err != nil {
 		return false, err
 	}
