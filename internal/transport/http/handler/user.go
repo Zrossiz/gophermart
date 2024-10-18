@@ -317,14 +317,21 @@ func (u *UserHandler) Withdrawls(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrWithdrawlsNotFound:
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
+			rw.Write([]byte("[]"))
+			return
 		default:
 			http.Error(rw, "failed to get withdrawls", http.StatusInternalServerError)
+			return
 		}
-		return
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
+
+	if len(withdrwals) == 0 {
+		rw.Write([]byte("[]"))
+		return
+	}
 
 	err = json.NewEncoder(rw).Encode(withdrwals)
 	if err != nil {
