@@ -167,7 +167,7 @@ func (u *UserService) GetUserBalance(username string) (float64, float64, error) 
 		return 0.00, 0.00, nil
 	}
 
-	return curUser.Account.InexactFloat64(), withdrawn, nil
+	return curUser.Account, withdrawn, nil
 }
 
 func hashPassword(password string, cost int) (string, error) {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Zrossiz/gophermart/internal/model"
+	"github.com/Zrossiz/gophermart/internal/utils"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/shopspring/decimal"
@@ -39,6 +40,8 @@ func (u *UserStore) GetUserByName(name string) (*model.User, error) {
 		}
 		return nil, err
 	}
+
+	user.Account = utils.Round(user.Account, 5)
 
 	return &user, nil
 }
