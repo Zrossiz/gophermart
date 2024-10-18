@@ -270,18 +270,8 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if orders == nil {
-		rw.Header().Set("Content-Type", "application/json")
-		rw.WriteHeader(http.StatusOK)
-		return
-	}
-
-	if len(orders) == 0 {
-		rw.Header().Set("Content-Type", "application/json")
-		rw.WriteHeader(http.StatusOK)
-		return
-	}
-
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(rw).Encode(orders)
 	if err != nil {
 		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
