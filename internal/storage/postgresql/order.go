@@ -72,11 +72,13 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 		LEFT JOIN statuses s ON o.status_ID = s.ID
 		WHERE o.user_ID = $1
 	`
+	fmt.Println("start db query")
 	rows, err := o.db.Query(context.Background(), sql, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+	fmt.Println("end db query")
 
 	var orders []model.Order
 	for rows.Next() {
@@ -111,6 +113,8 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
+
+	fmt.Println("end db layer")
 
 	return orders, nil
 }

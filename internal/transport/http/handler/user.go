@@ -197,7 +197,7 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrNotEnoughMoney:
 			http.Error(rw, "not enough money on account", http.StatusPaymentRequired)
 		case apperrors.ErrInvalIDOrderID:
-			http.Error(rw, "invalID order ID", http.StatusUnprocessableEntity)
+			http.Error(rw, "invalid order ID", http.StatusUnprocessableEntity)
 		default:
 			fmt.Println(err)
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
@@ -255,6 +255,8 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
 		return
 	}
+
+	fmt.Println("start handler")
 
 	orders, err := u.orderService.GetAllOrdersByUser(userID)
 	if err != nil {
