@@ -33,6 +33,6 @@ func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
 		r.With(middleware.JWTMiddleware).Get("/orders", u.handler.GetAllOrdersByUser)
 		r.With(middleware.JWTMiddleware).Get("/balance", u.handler.GetUserBalance)
 		r.With(middleware.JWTMiddleware).Post("/balance/withdraw", u.handler.Withdraw)
-		r.With(middleware.JWTMiddleware).Get("/withdrawls", u.handler.Withdrawls)
+		r.With(middleware.JWTMiddleware).Get("/withdrawals", u.handler.Withdrawls)
 	})
 }

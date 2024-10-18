@@ -75,7 +75,6 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 
 	rows, err := o.db.Query(context.Background(), sql, userID)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -106,7 +105,6 @@ func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 	}
 
 	if err = rows.Err(); err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
