@@ -185,13 +185,13 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	intOrderId, err := strconv.Atoi(withdrawDTO.Order)
+	intOrderID, err := strconv.Atoi(withdrawDTO.Order)
 	if err != nil {
 		http.Error(rw, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	err = u.balanceHistoryService.Withdraw(userID, intOrderId, withdrawDTO.Sum)
+	err = u.balanceHistoryService.Withdraw(userID, intOrderID, withdrawDTO.Sum)
 	if err != nil {
 		switch err {
 		case apperrors.ErrNotEnoughMoney:
@@ -271,6 +271,14 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 	}
 
 	if orders == nil {
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if len(orders) == 0 {
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(http.StatusOK)
 		return
 	}
 
