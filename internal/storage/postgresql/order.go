@@ -67,9 +67,9 @@ func (o *OrderStore) UpdateSumAndStatusOrder(orderID int64, status string, sum f
 
 func (o *OrderStore) GetAllOrdersByUser(userID int64) ([]model.Order, error) {
 	sql := `
-		SELECT o.order_ID, o.user_ID, s.status, o.accrual, o.created_at, o.updated_at
+		SELECT o.order_id, o.user_id, s.status, o.accrual, o.created_at, o.updated_at
 		FROM orders o 
-		LEFT JOIN statuses s ON o.status_ID = s.ID
+		LEFT JOIN statuses s ON o.status_id = s.id
 		WHERE o.user_ID = $1
 	`
 
