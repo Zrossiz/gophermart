@@ -11,6 +11,7 @@ import (
 	"github.com/Zrossiz/gophermart/internal/apperrors"
 	"github.com/Zrossiz/gophermart/internal/dto"
 	"github.com/Zrossiz/gophermart/internal/middleware"
+	"github.com/Zrossiz/gophermart/internal/utils"
 )
 
 type UserHandler struct {
@@ -293,8 +294,8 @@ func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	response := dto.BalanceUser{
-		Current:   current,
-		Withdrawn: withdrawn,
+		Current:   utils.Round(current, 5),
+		Withdrawn: utils.Round(withdrawn, 5),
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
