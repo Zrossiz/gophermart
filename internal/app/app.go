@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/Zrossiz/gophermart/internal/api"
 	"github.com/Zrossiz/gophermart/internal/config"
@@ -17,7 +18,6 @@ import (
 	"github.com/Zrossiz/gophermart/pkg/logger"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 )
 
@@ -63,12 +63,17 @@ func Start() {
 	})
 	r := router.New(h)
 
-	cr := cron.New()
-	cr.AddFunc("*/1 * * *", func() {
-		log.Info("starting cron...")
-		s.OrderService.UpdateOrders()
-		log.Info("cron ended")
-	})
+	go func() {
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			fmt.Println("Starting cron task...")
+			s.OrderService.UpdateOrders()
+			fmt.Println("Cron task ended")
+		}
+
+	}()
 
 	srv := &http.Server{
 		Addr:    cfg.RunAddress,

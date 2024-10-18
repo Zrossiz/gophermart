@@ -47,22 +47,53 @@ func (o *OrderStore) GetOrderByID(orderID int) (*model.Order, error) {
 }
 
 func (o *OrderStore) UpdateSumAndStatusOrder(orderID int64, status string, sum float64) (bool, error) {
-	sql := `SELECT ID FROM statuses WHERE status = $1`
-	row := o.db.QueryRow(context.Background(), sql, status)
-	var statusID int
-	err := row.Scan(&statusID)
+	tx, err := o.db.Begin(context.Background())
 	if err != nil {
-		return false, nil
+		return false, fmt.Errorf("error starting transaction: %w", err)
+	}
+	defer tx.Rollback(context.Background())
+
+	sql := `SELECT id FROM statuses WHERE status = $1`
+	row := tx.QueryRow(context.Background(), sql, status)
+	var statusID int
+	err = row.Scan(&statusID)
+	if err != nil {
+		return false, fmt.Errorf("error fetching status ID: %w", err)
 	}
 
-	sql = `UPDATE orders SET status_ID = $1, accrual = $2 updated_at = NOW() WHERE order_ID = $3`
-	cmdTag, err := o.db.Exec(context.Background(), sql, statusID, utils.Round(sum, 5), orderID)
+	sql = `SELECT user_id FROM orders WHERE order_id = $1`
+	row = tx.QueryRow(context.Background(), sql, orderID)
+	var userID int
+	err = row.Scan(&userID)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("error fetching user ID: %w", err)
+	}
+
+	roundedSum := utils.Round(sum, 5)
+
+	sql = `UPDATE orders SET status_ID = $1, accrual = $2, updated_at = NOW() WHERE order_id = $3`
+	cmdTag, err := tx.Exec(context.Background(), sql, statusID, roundedSum, orderID)
+	if err != nil {
+		return false, fmt.Errorf("error updating order: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return false, nil
+		return false, fmt.Errorf("no order found with id: %d", orderID)
 	}
+
+	sql = `UPDATE users SET account = account + $1 WHERE id = $2`
+	cmdTag, err = tx.Exec(context.Background(), sql, roundedSum, userID)
+	if err != nil {
+		return false, fmt.Errorf("error updating user account: %w", err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return false, fmt.Errorf("no user found with id: %d", userID)
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return false, fmt.Errorf("error committing transaction: %w", err)
+	}
+
 	return true, nil
 }
 
