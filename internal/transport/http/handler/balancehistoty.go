@@ -7,7 +7,7 @@ type BalanceHistoryHandler struct {
 }
 
 type BalanceHistoryService interface {
-	Withdraw(userID, orderID int, sum float64) error
+	Withdraw(userID int, orderID string, sum float64) error
 	GetAllWithdrawlsByUser(userID int) ([]model.BalanceHistory, error)
 }
 

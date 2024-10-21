@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
@@ -186,13 +185,7 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	intOrderID, err := strconv.Atoi(withdrawDTO.Order)
-	if err != nil {
-		http.Error(rw, "invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	err = u.balanceHistoryService.Withdraw(userID, intOrderID, withdrawDTO.Sum)
+	err = u.balanceHistoryService.Withdraw(userID, withdrawDTO.Order, withdrawDTO.Sum)
 	if err != nil {
 		switch err {
 		case apperrors.ErrNotEnoughMoney:

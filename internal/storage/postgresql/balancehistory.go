@@ -80,7 +80,7 @@ func (b *BalanceHistoryStore) GetAllDebits(userID int64) ([]model.BalanceHistory
 	return histories, nil
 }
 
-func (b *BalanceHistoryStore) Withdraw(userID, orderID int, sum float64) error {
+func (b *BalanceHistoryStore) Withdraw(userID int, orderID string, sum float64) error {
 	tx, err := b.db.Begin(context.Background())
 	if err != nil {
 		b.log.Error("failed to start transaction")
@@ -110,7 +110,7 @@ func (b *BalanceHistoryStore) Withdraw(userID, orderID int, sum float64) error {
 	}
 
 	_, err = b.Create(dto.CreateBalanceHistory{
-		OrderID: int64(orderID),
+		OrderID: orderID,
 		UserID:  int64(userID),
 		Change:  sum,
 	})
