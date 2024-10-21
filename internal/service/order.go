@@ -29,7 +29,7 @@ type OrderStorage interface {
 }
 
 type APIService interface {
-	UpdateOrder(orderID int) (string, float64, error)
+	UpdateOrder(orderID int) (dto.ExternalOrderResponse, error)
 }
 
 func NewOrderService(db OrderStorage, statusDB StatusStorage, a APIService, log *zap.Logger) *OrderService {
@@ -120,12 +120,12 @@ func (o *OrderService) UpdateOrders() {
 	}
 
 	for _, order := range unhandledOrders {
-		status, accrual, err := o.api.UpdateOrder(order.OrderID)
+		respOrder, err := o.api.UpdateOrder(order.OrderID)
 		if err != nil {
 			o.log.Error("error update order from external app", zap.Error(err))
 		}
 
-		_, err = o.orderDB.UpdateSumAndStatusOrder(int64(order.OrderID), strings.ToLower(status), accrual)
+		_, err = o.orderDB.UpdateSumAndStatusOrder(int64(order.OrderID), strings.ToLower(respOrder.Status), respOrder.Accrual)
 		if err != nil {
 			o.log.Error("error update order", zap.Error(err))
 		}

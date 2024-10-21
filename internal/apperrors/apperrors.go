@@ -16,4 +16,9 @@ var (
 	ErrOrdersNotFound                    = errors.New("orders not found")
 	ErrNotEnoughMoney                    = errors.New("not enough money")
 	ErrWithdrawlsNotFound                = errors.New("withdrawsls not found")
+
+	ErrNotFoundOrders      = errors.New("нет заказов для обработки")
+	ErrInvalidAccrualOrder = errors.New("invalid accrual order")                      // 500
+	ErrNoContent           = errors.New("заказ не зарегистрирован в системе расчёта") // 204
+	ErrTooManyRequests     = errors.New("превышено количество запросов к сервису")    // 429
 )

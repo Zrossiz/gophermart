@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(20) UNIQUE NOT NULL,
     password VARCHAR(60) NOT NULL,
-    account FLOAT DEFAULT 0,
+    account NUMERIC(15,2) NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS orders (
     order_id BIGINT PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     status_id INT NOT NULL REFERENCES statuses(id) ON DELETE CASCADE,
-      accrual FLOAT DEFAULT 0,
+    accrual NUMERIC(15,2) NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS balance_history (
     id SERIAL PRIMARY KEY,
     order_id BIGINT NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    change FLOAT NOT NULL,
+    change NUMERIC(15,2) NOT NULL DEFAULT 0,
     processed_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()

@@ -35,3 +35,9 @@ type ResponseOrder struct {
 	Status    string    `json:"status,omitempty"`
 	CreatedAt time.Time `json:"uploaded_at"`
 }
+
+type ExternalOrderResponse struct {
+	Order   string  `json:"order"`
+	Status  string  `json:"status"`
+	Accrual float64 `json:"accrual,omitempty"`
+}
