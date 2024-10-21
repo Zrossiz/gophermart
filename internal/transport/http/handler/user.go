@@ -223,13 +223,7 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	orderID, err := strconv.Atoi(string(body))
-	if err != nil {
-		http.Error(rw, "invalID request body", http.StatusBadRequest)
-		return
-	}
-
-	err = u.orderService.UploadOrder(orderID, userID)
+	err = u.orderService.UploadOrder(string(body), userID)
 	if err != nil {
 		switch err {
 		case apperrors.ErrOrderAlreadyUploaded:

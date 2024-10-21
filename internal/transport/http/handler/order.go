@@ -11,7 +11,7 @@ type OrderHandler struct {
 }
 
 type OrderService interface {
-	UploadOrder(order int, userID int) error
+	UploadOrder(order string, userID int) error
 	GetAllOrdersByUser(userID int) ([]dto.ResponseOrder, error)
 	UpdateOrders()
 }

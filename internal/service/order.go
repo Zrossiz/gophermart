@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/Zrossiz/gophermart/internal/apperrors"
@@ -20,10 +19,10 @@ type OrderService struct {
 }
 
 type OrderStorage interface {
-	CreateOrder(orderID int, userID int) (bool, error)
+	CreateOrder(orderID string, userID int) (bool, error)
 	GetAllOrdersByUser(userID int64) ([]model.Order, error)
 	UpdateSumAndStatusOrder(orderID string, status string, sum float64) (bool, error)
-	GetOrderByID(orderID int) (*model.Order, error)
+	GetOrderByID(orderID string) (*model.Order, error)
 	GetAllWithdrawnByUser(userID int64) (float64, error)
 	GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]model.Order, error)
 }
@@ -41,7 +40,7 @@ func NewOrderService(db OrderStorage, statusDB StatusStorage, a APIService, log 
 	}
 }
 
-func (o *OrderService) UploadOrder(order int, userID int) error {
+func (o *OrderService) UploadOrder(order string, userID int) error {
 	existOrder, err := o.orderDB.GetOrderByID(order)
 	if err != nil {
 		o.log.Error(err.Error())
@@ -56,7 +55,7 @@ func (o *OrderService) UploadOrder(order int, userID int) error {
 		return apperrors.ErrOrderAlreadyUploaded
 	}
 
-	luhn := utils.IsLuhn(strconv.Itoa(order))
+	luhn := utils.IsLuhn(order)
 	if !luhn {
 		return apperrors.ErrInvalIDOrderID
 	}

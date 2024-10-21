@@ -22,7 +22,7 @@ func NewOrderStore(db *pgxpool.Pool, log *zap.Logger) OrderStore {
 	return OrderStore{db: db, log: log}
 }
 
-func (o *OrderStore) CreateOrder(orderID int, userID int) (bool, error) {
+func (o *OrderStore) CreateOrder(orderID string, userID int) (bool, error) {
 	sql := `INSERT INTO orders (order_ID, user_ID, status_ID) VALUES ($1, $2, $3)`
 	_, err := o.db.Exec(context.Background(), sql, orderID, userID, 1)
 	if err != nil {
@@ -31,7 +31,7 @@ func (o *OrderStore) CreateOrder(orderID int, userID int) (bool, error) {
 	return true, nil
 }
 
-func (o *OrderStore) GetOrderByID(orderID int) (*model.Order, error) {
+func (o *OrderStore) GetOrderByID(orderID string) (*model.Order, error) {
 	sql := `SELECT order_ID, user_ID, accrual, created_at, updated_at FROM orders WHERE order_ID = $1`
 	row := o.db.QueryRow(context.Background(), sql, orderID)
 	var order model.Order
@@ -79,7 +79,7 @@ func (o *OrderStore) UpdateSumAndStatusOrder(orderID string, status string, sum 
 		return false, fmt.Errorf("error updating order: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return false, fmt.Errorf("no order found with id: %d", orderID)
+		return false, fmt.Errorf("no order found with id: %s", orderID)
 	}
 
 	sql = `UPDATE users SET account = account + $1 WHERE id = $2`
