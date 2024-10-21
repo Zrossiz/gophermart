@@ -30,8 +30,8 @@ type Order struct {
 }
 
 type BalanceHistory struct {
-	ID          int        `json:"-" db:"ID"`
-	OrderID     int        `json:"order" db:"order_id"`
+	ID          int        `json:"-" db:"id"`
+	OrderID     string     `json:"order" db:"order_id"`
 	UserID      int        `json:"-" db:"user_id"`
 	Change      float64    `json:"sum" db:"change"`
 	ProcessedAt *time.Time `json:"processed_at,omitempty" db:"processed_at"`
@@ -40,8 +40,8 @@ type BalanceHistory struct {
 }
 
 type RefreshToken struct {
-	ID        int       `json:"ID" db:"ID"`
-	UserID    int       `json:"user_ID" db:"user_ID"`
+	ID        int       `json:"id" db:"id"`
+	UserID    int       `json:"user_id" db:"userid"`
 	Token     string    `json:"token" db:"token"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`

@@ -294,7 +294,7 @@ func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (u *UserHandler) Withdrawls(rw http.ResponseWriter, r *http.Request) {
+func (u *UserHandler) Withdrawals(rw http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.UserIDContextKey).(int)
 	if !ok {
 		http.Error(rw, "could not get user ID", http.StatusUnauthorized)
@@ -307,7 +307,6 @@ func (u *UserHandler) Withdrawls(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrWithdrawlsNotFound:
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
-			rw.Write([]byte("[]"))
 			return
 		default:
 			fmt.Println(err)
@@ -318,11 +317,6 @@ func (u *UserHandler) Withdrawls(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
-
-	if len(withdrwals) == 0 {
-		rw.Write([]byte("[]"))
-		return
-	}
 
 	err = json.NewEncoder(rw).Encode(withdrwals)
 	if err != nil {
