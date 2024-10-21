@@ -310,6 +310,7 @@ func (u *UserHandler) Withdrawls(rw http.ResponseWriter, r *http.Request) {
 			rw.Write([]byte("[]"))
 			return
 		default:
+			fmt.Println(err)
 			http.Error(rw, "failed to get withdrawls", http.StatusInternalServerError)
 			return
 		}
