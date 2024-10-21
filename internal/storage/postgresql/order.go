@@ -48,7 +48,7 @@ func (o *OrderStore) GetOrderByID(orderID int) (*model.Order, error) {
 	return &order, nil
 }
 
-func (o *OrderStore) UpdateSumAndStatusOrder(orderID int64, status string, sum float64) (bool, error) {
+func (o *OrderStore) UpdateSumAndStatusOrder(orderID string, status string, sum float64) (bool, error) {
 	tx, err := o.db.Begin(context.Background())
 	if err != nil {
 		return false, fmt.Errorf("error starting transaction: %w", err)

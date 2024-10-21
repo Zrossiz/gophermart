@@ -21,9 +21,9 @@ func New(cfg *config.Config) *APIService {
 	return &APIService{cfg: cfg}
 }
 
-func (a *APIService) UpdateOrder(orderID int) (dto.ExternalOrderResponse, error) {
+func (a *APIService) UpdateOrder(orderID string) (dto.ExternalOrderResponse, error) {
 	var orderResp dto.ExternalOrderResponse
-	url := fmt.Sprintf("%s/api/orders/%d", a.cfg.AcccrualSystemAddress, orderID)
+	url := fmt.Sprintf("%s/api/orders/%s", a.cfg.AcccrualSystemAddress, orderID)
 
 	resp, err := http.Get(url)
 	if err != nil {
