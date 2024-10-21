@@ -167,26 +167,24 @@ func (o *OrderStore) GetAllWithdrawnByUser(userID int64) (float64, error) {
 	return totalChange, nil
 }
 
-func (o *OrderStore) GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]model.Order, error) {
-	sql := `SELECT order_id, user_id, status_id FROM orders WHERE status_id = $1 OR status_id = $2`
+func (o *OrderStore) GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]string, error) {
+	sql := `SELECT order_id FROM orders WHERE status_id = $1 OR status_id = $2`
 
 	rows, err := o.db.Query(context.Background(), sql, unhandledStatus1, unhandledStatus2)
 	if err != nil {
-		o.log.Error("error GetAllWithdrawnByUser", zap.Error(err))
+		o.log.Error("error GetAllUnhandlerOrders", zap.Error(err))
 		return nil, err
 	}
 	defer rows.Close()
 
-	var orders []model.Order
+	var orders []string
 	for rows.Next() {
-		for rows.Next() {
-			var order model.Order
-			err := rows.Scan(&order.OrderID, &order.UserID, &order.Status)
-			if err != nil {
-				return nil, err
-			}
-			orders = append(orders, order)
+		var order string
+		err := rows.Scan(&order)
+		if err != nil {
+			return nil, err
 		}
+		orders = append(orders, order)
 	}
 
 	if err = rows.Err(); err != nil {

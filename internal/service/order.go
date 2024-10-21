@@ -24,7 +24,7 @@ type OrderStorage interface {
 	UpdateSumAndStatusOrder(orderID string, status string, sum float64) (bool, error)
 	GetOrderByID(orderID string) (*model.Order, error)
 	GetAllWithdrawnByUser(userID int64) (float64, error)
-	GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]model.Order, error)
+	GetAllUnhandlerOrders(unhandledStatus1, unhandledStatus2 int) ([]string, error)
 }
 
 type APIService interface {
@@ -105,7 +105,7 @@ func (o *OrderService) UpdateOrders() {
 		o.log.Error("error get all statuses", zap.Error(err))
 	}
 
-	unhandledStatuses := make([]int, 2)
+	var unhandledStatuses []int
 
 	for i := 0; i < len(statuses); i++ {
 		if statuses[i].Status == "new" || statuses[i].Status == "processing" {
@@ -116,15 +116,21 @@ func (o *OrderService) UpdateOrders() {
 	unhandledOrders, err := o.orderDB.GetAllUnhandlerOrders(unhandledStatuses[0], unhandledStatuses[1])
 	if err != nil {
 		o.log.Error("error get unhandledOrders", zap.Error(err))
+		return
+	}
+
+	if len(unhandledOrders) == 0 {
+		return
 	}
 
 	for _, order := range unhandledOrders {
-		respOrder, err := o.api.UpdateOrder(order.OrderID)
+		respOrder, err := o.api.UpdateOrder(order)
 		if err != nil {
 			o.log.Error("error update order from external app", zap.Error(err))
 		}
 
-		_, err = o.orderDB.UpdateSumAndStatusOrder(order.OrderID, strings.ToLower(respOrder.Status), respOrder.Accrual)
+		_, err = o.orderDB.UpdateSumAndStatusOrder(order, strings.ToLower(respOrder.Status), respOrder.Accrual)
+
 		if err != nil {
 			o.log.Error("error update order", zap.Error(err))
 		}
