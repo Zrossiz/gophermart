@@ -1,5 +1,7 @@
 package handler
 
+import "go.uber.org/zap"
+
 type Handler struct {
 	UserHandler           *UserHandler
 	BalanceHistoryHandler *BalanceHistoryHandler
@@ -14,9 +16,9 @@ type Service struct {
 	BalanceHistoryService BalanceHistoryService
 }
 
-func New(serv Service) *Handler {
+func New(serv Service, log *zap.Logger) *Handler {
 	return &Handler{
-		UserHandler:           NewUserHandler(serv.UserService, serv.OrderService, serv.BalanceHistoryService),
+		UserHandler:           NewUserHandler(serv.UserService, serv.OrderService, serv.BalanceHistoryService, log),
 		BalanceHistoryHandler: NewBalanceHistoryHandler(serv.BalanceHistoryService),
 		StatusHandler:         NewStatusHandler(serv.StatusService),
 		OrderHandler:          NewOrderHandler(serv.OrderService),

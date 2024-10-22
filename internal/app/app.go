@@ -60,7 +60,7 @@ func Start() {
 		BalanceHistoryService: s.BalanceHistoryService,
 		OrderService:          s.OrderService,
 		StatusService:         s.StatusService,
-	})
+	}, log)
 	r := router.New(h)
 
 	go func() {

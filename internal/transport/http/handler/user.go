@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -11,12 +10,14 @@ import (
 	"github.com/Zrossiz/gophermart/internal/dto"
 	"github.com/Zrossiz/gophermart/internal/middleware"
 	"github.com/Zrossiz/gophermart/internal/utils"
+	"go.uber.org/zap"
 )
 
 type UserHandler struct {
 	userService           UserService
 	orderService          OrderService
 	balanceHistoryService BalanceHistoryService
+	log                   *zap.Logger
 }
 
 type UserService interface {
@@ -29,11 +30,13 @@ func NewUserHandler(
 	userService UserService,
 	orderSerice OrderService,
 	balanceHistoryService BalanceHistoryService,
+	log *zap.Logger,
 ) *UserHandler {
 	return &UserHandler{
 		userService:           userService,
 		orderService:          orderSerice,
 		balanceHistoryService: balanceHistoryService,
+		log:                   log,
 	}
 }
 
@@ -66,6 +69,7 @@ func (u *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrHashPassword, apperrors.ErrJWTGeneration:
 			http.Error(rw, "error processing request", http.StatusInternalServerError)
 		default:
+			u.log.Error(err.Error())
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
 		}
 		return
@@ -131,7 +135,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrHashPassword, apperrors.ErrJWTGeneration:
 			http.Error(rw, "error processing request", http.StatusInternalServerError)
 		default:
-			fmt.Println(err)
+			u.log.Error(err.Error())
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
 		}
 		return
@@ -193,7 +197,7 @@ func (u *UserHandler) Withdraw(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrInvalIDOrderID:
 			http.Error(rw, "invalid order ID", http.StatusUnprocessableEntity)
 		default:
-			fmt.Println(err)
+			u.log.Error(err.Error())
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
 		}
 		return
@@ -229,7 +233,7 @@ func (u *UserHandler) UploadOrder(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrInvalIDOrderID:
 			http.Error(rw, "invalID order ID", http.StatusUnprocessableEntity)
 		default:
-			fmt.Println(err)
+			u.log.Error(err.Error())
 			http.Error(rw, "unknown error", http.StatusInternalServerError)
 		}
 		return
@@ -253,6 +257,7 @@ func (u *UserHandler) GetAllOrdersByUser(rw http.ResponseWriter, r *http.Request
 			rw.WriteHeader(http.StatusOK)
 			rw.Write([]byte("[]"))
 		default:
+			u.log.Error(err.Error())
 			http.Error(rw, "failed to get orders", http.StatusInternalServerError)
 		}
 		return
@@ -276,6 +281,7 @@ func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
 
 	current, withdrawn, err := u.userService.GetUserBalance(username)
 	if err != nil {
+		u.log.Error(err.Error())
 		http.Error(rw, "unknown error", http.StatusInternalServerError)
 		return
 	}
@@ -290,6 +296,7 @@ func (u *UserHandler) GetUserBalance(rw http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(rw).Encode(response)
 	if err != nil {
+		u.log.Error(err.Error())
 		http.Error(rw, "unable to encode response", http.StatusInternalServerError)
 	}
 }
@@ -307,12 +314,11 @@ func (u *UserHandler) Withdrawals(rw http.ResponseWriter, r *http.Request) {
 		case apperrors.ErrWithdrawlsNotFound:
 			rw.Header().Set("Content-Type", "application/json")
 			rw.WriteHeader(http.StatusOK)
-			return
 		default:
-			fmt.Println(err)
+			u.log.Error(err.Error())
 			http.Error(rw, "failed to get withdrawls", http.StatusInternalServerError)
-			return
 		}
+		return
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
