@@ -136,7 +136,7 @@ func TestRefreshTokenStoreDeleteteByUser(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, createdToken, "refresh token should be created successfully")
 
-	deleted, err := refreshTokenStore.DeleteTokensByUser(int64(user.ID))
+	deleted, err := refreshTokenStore.DeleteTokenByUser(int64(user.ID))
 	require.NoError(t, err)
 	assert.True(t, deleted, "refresh token delete should be true")
 }

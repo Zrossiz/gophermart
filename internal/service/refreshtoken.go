@@ -9,7 +9,7 @@ type RefreshTokenService struct {
 type TokenStorage interface {
 	Create(userID int64, token string) (bool, error)
 	DeleteByToken(token string) (bool, error)
-	DeleteTokensByUser(userID int64) (bool, error)
+	DeleteTokenByUser(userID int64) (bool, error)
 	GetTokenByToken(token string) (*model.RefreshToken, error)
 	GetTokenByUser(userID int64) (*model.RefreshToken, error)
 }

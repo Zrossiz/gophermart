@@ -46,7 +46,7 @@ func (t *TokenStore) DeleteByToken(token string) (bool, error) {
 	return true, nil
 }
 
-func (t *TokenStore) DeleteTokensByUser(userID int64) (bool, error) {
+func (t *TokenStore) DeleteTokenByUser(userID int64) (bool, error) {
 	sql := `DELETE FROM refresh_tokens WHERE user_ID = $1`
 	cmdTag, err := t.db.Exec(context.Background(), sql, userID)
 	if err != nil {
