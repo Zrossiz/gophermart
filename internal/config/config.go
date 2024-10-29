@@ -33,7 +33,7 @@ func getIntEnvOrDefault(key string, defaultValue int) (int, error) {
 	if value := os.Getenv(key); value != "" {
 		intValue, err := strconv.Atoi(value)
 		if err != nil {
-			return 0, nil
+			return 0, err
 		}
 		return intValue, nil
 	}

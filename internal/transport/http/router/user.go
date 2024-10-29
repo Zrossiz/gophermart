@@ -25,7 +25,7 @@ func NewUserRouter(h UserHandler) *UserRouter {
 	return &UserRouter{handler: h}
 }
 
-func (u *UserRouter) RegisterRoutes(r chi.Router, h UserHandler) {
+func (u *UserRouter) RegisterRoutes(r chi.Router, _ UserHandler) {
 	r.Route("/api/user", func(r chi.Router) {
 		r.Post(("/register"), u.handler.Registration)
 		r.Post("/login", u.handler.Login)

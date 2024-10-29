@@ -18,7 +18,7 @@ func NewOrderRouter(handler OrderHandler) *OrderRouter {
 	return &OrderRouter{handler: handler}
 }
 
-func (o *OrderRouter) RegisterRoutes(r chi.Router, h OrderHandler) {
+func (o *OrderRouter) RegisterRoutes(r chi.Router, _ OrderHandler) {
 	r.Route("/order", func(r chi.Router) {
 		r.Post("/update/orders", o.handler.UpdateOrders)
 	})

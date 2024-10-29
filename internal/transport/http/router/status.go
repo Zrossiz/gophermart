@@ -21,7 +21,7 @@ func NewStatusRouter(handler StatusHandler) *StatusRouter {
 	}
 }
 
-func (s *StatusRouter) RegisterRoutes(r chi.Router, h StatusHandler) {
+func (s *StatusRouter) RegisterRoutes(r chi.Router, _ StatusHandler) {
 	r.Route("/api/statuses", func(r chi.Router) {
 		r.With(middleware.JWTMiddleware).Post("/", s.handler.Create)
 	})

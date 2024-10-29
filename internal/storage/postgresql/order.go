@@ -23,8 +23,15 @@ func NewOrderStore(db *pgxpool.Pool, log *zap.Logger) OrderStore {
 }
 
 func (o *OrderStore) CreateOrder(orderID string, userID int) (bool, error) {
-	sql := `INSERT INTO orders (order_ID, user_ID, status_ID) VALUES ($1, $2, $3)`
-	_, err := o.db.Exec(context.Background(), sql, orderID, userID, 1)
+	var statusID int
+	sql := `SELECT id FROM statuses WHERE status = 'new'`
+	err := o.db.QueryRow(context.Background(), sql).Scan(&statusID)
+	if err != nil {
+		return false, fmt.Errorf("failed to get status ID for 'new': %w", err)
+	}
+
+	sql = `INSERT INTO orders (order_ID, user_ID, status_ID) VALUES ($1, $2, $3)`
+	_, err = o.db.Exec(context.Background(), sql, orderID, userID, statusID)
 	if err != nil {
 		return false, err
 	}

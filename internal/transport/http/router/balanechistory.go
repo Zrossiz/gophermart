@@ -12,7 +12,7 @@ func NewBalanceHistoryRouter() *BalanceHistoryRouter {
 	return &BalanceHistoryRouter{}
 }
 
-func (o *BalanceHistoryRouter) RegisterRoutes(r chi.Router, h BalanceHistoryHandler) {
+func (o *BalanceHistoryRouter) RegisterRoutes(r chi.Router, _ BalanceHistoryHandler) {
 	r.Route("/balance-history", func(r chi.Router) {
 	})
 }
