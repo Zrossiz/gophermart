@@ -31,7 +31,6 @@ func TestUserStoreCreate(t *testing.T) {
 	defer logger.Sync()
 	userStore := NewUserStore(testDB, logger)
 
-	// Попытка создать пользователя
 	created, err := userStore.Create("testuser1", "testpassword")
 	require.NoError(t, err)
 	assert.True(t, created, "user should be created successfully")
