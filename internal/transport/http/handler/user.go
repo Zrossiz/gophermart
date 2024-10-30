@@ -126,7 +126,7 @@ func (u *UserHandler) Login(rw http.ResponseWriter, r *http.Request) {
 	accessToken, refreshToken, err := u.userService.Login(loginDTO)
 	if err != nil {
 		switch err {
-		case apperrors.ErrInvalIDPassword:
+		case apperrors.ErrInvalidPassword:
 			http.Error(rw, "unauthorized", http.StatusUnauthorized)
 		case apperrors.ErrUserAlreadyExists:
 			http.Error(rw, "user not found", http.StatusBadRequest)

@@ -118,7 +118,7 @@ func (u *UserService) Login(loginDTO dto.Registration) (string, string, error) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(curUser.Password), []byte(loginDTO.Password))
 	if err != nil {
-		return "", "", apperrors.ErrInvalIDPassword
+		return "", "", apperrors.ErrInvalidPassword
 	}
 
 	JWTAccessProps := utils.GenerateJWTProps{
@@ -154,7 +154,7 @@ func (u *UserService) GetUserBalance(username string) (float64, float64, error) 
 	curUser, err := u.dbUser.GetUserByName(username)
 	if err != nil {
 		u.log.Error(err.Error())
-		return 0.00, 0.00, nil
+		return 0.00, 0.00, apperrors.ErrDBQuery
 	}
 
 	if curUser == nil {
